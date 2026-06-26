@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>AX·PBL MANIFESTO — 부산대학교</title>
+
+<!-- Latin display: Anton + Archivo Black + Syncopate. Korean display: Black Han Sans. Korean body: IBM Plex Sans KR -->
+<link href="vendor/fonts.css" rel="stylesheet" />
+
+<style>
+:root{
+  --blue:#1A36FF;
+  --pink:#FF2E63;
+  --lime:#C6FF00;
+  --black:#0A0A0A;
+  --white:#FFFFFF;
+  --ink:#0A0A0A;
+  --display:"Anton","Black Han Sans",sans-serif;
+  --displayko:"Black Han Sans",sans-serif;
+  --mono:"Syncopate",sans-serif;
+  --body:"IBM Plex Sans KR","Archivo Black",sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{ -webkit-text-size-adjust:100%; }
+body{
+  font-family:var(--body);
+  background:var(--black);
+  color:var(--white);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── Scroll snap poster sequence ───────────────────────────────── */
+.deck{
+  height:100svh;
+  overflow-y:scroll;
+  overflow-x:hidden;
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+.deck::-webkit-scrollbar{display:none}
+
+.poster{
+  position:relative;
+  min-height:100svh;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:clamp(20px,5vw,72px);
+  overflow:hidden;
+  isolation:isolate;
+}
+
+/* per-block themes */
+.p-hero{background:var(--blue);color:var(--white)}
+.p-concept{background:var(--lime);color:var(--black)}
+.p-bank{background:var(--pink);color:var(--white)}
+.p-layer{background:var(--black);color:var(--white)}
+
+/* ─── Giant numerals watermark ──────────────────────────────────── */
+.bignum{
+  position:absolute;
+  font-family:var(--display);
+  line-height:.74;
+  letter-spacing:-.04em;
+  z-index:0;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ─── Memphis shapes ────────────────────────────────────────────── */
+.shape{position:absolute;z-index:0;pointer-events:none}
+.shape.circle{border-radius:50%}
+.shape.ring{border-radius:50%;background:transparent}
+.shape.tri{width:0;height:0;background:transparent!important}
+
+/* ─── Type ──────────────────────────────────────────────────────── */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:clamp(9px,1.4vw,13px);
+  letter-spacing:.34em;
+  text-transform:uppercase;
+  font-weight:700;
+}
+.kicker{
+  display:inline-block;
+  font-family:var(--mono);
+  font-size:clamp(9px,1.3vw,12px);
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  padding:7px 14px;
+  border:2.5px solid currentColor;
+  font-weight:700;
+}
+.huge{
+  font-family:var(--displayko);
+  line-height:.92;
+  letter-spacing:-.01em;
+  font-weight:400;
+}
+.huge-en{
+  font-family:var(--display);
+  letter-spacing:-.03em;
+  line-height:.82;
+  text-transform:uppercase;
+}
+
+/* ─── HERO ──────────────────────────────────────────────────────── */
+.p-hero .topbar{
+  position:absolute;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(16px,3vw,28px) clamp(20px,5vw,72px);
+  z-index:5;
+}
+.wordmark{
+  font-family:var(--mono);font-weight:700;
+  letter-spacing:.16em;font-size:clamp(13px,1.8vw,17px);
+}
+.wordmark b{color:var(--lime)}
+.topnav{display:flex;gap:clamp(10px,2vw,26px);flex-wrap:wrap}
+.topnav a{
+  color:inherit;text-decoration:none;
+  font-family:var(--mono);font-weight:700;
+  font-size:clamp(8px,1.1vw,11px);letter-spacing:.18em;text-transform:uppercase;
+  opacity:.85;transition:opacity .2s, color .2s;
+}
+.topnav a:hover{opacity:1;color:var(--lime)}
+
+.hero-grid{
+  position:relative;z-index:3;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:clamp(18px,3vw,34px);
+  max-width:1320px;width:100%;margin:0 auto;
+  padding-top:clamp(40px,8vh,80px);
+}
+.hero-eyebrow{
+  font-family:var(--mono);font-weight:700;
+  font-size:clamp(9px,1.5vw,13px);letter-spacing:.26em;text-transform:uppercase;
+  color:var(--lime);
+}
+.hero-title{
+  font-family:var(--displayko);
+  font-size:clamp(52px,13vw,184px);
+  line-height:.86;
+  letter-spacing:-.015em;
+}
+.hero-title .ln{display:block;overflow:hidden}
+.hero-title .ln span{display:block;will-change:transform}
+.hero-title .accent{color:var(--lime)}
+.hero-title .out{
+  color:transparent;
+  -webkit-text-stroke:clamp(1.5px,.35vw,4px) var(--white);
+}
+.hero-bottom{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;
+}
+.hero-lead{
+  max-width:42ch;
+  font-family:var(--body);font-weight:500;
+  font-size:clamp(13px,1.7vw,18px);line-height:1.5;
+}
+.hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  font-family:var(--mono);font-weight:700;
+  font-size:clamp(10px,1.3vw,13px);letter-spacing:.14em;text-transform:uppercase;
+  padding:15px 26px;text-decoration:none;cursor:pointer;border:3px solid var(--white);
+  transition:transform .15s ease, background .15s, color .15s;
+  display:inline-block;
+}
+.btn.solid{background:var(--lime);color:var(--black);border-color:var(--lime)}
+.btn.ghost{background:transparent;color:var(--white)}
+.btn:hover{transform:translate(-3px,-3px)}
+.btn.solid:hover{box-shadow:6px 6px 0 var(--white)}
+.btn.ghost:hover{background:var(--white);color:var(--blue);box-shadow:6px 6px 0 var(--lime)}
+
+/* ─── Marquee ticker ────────────────────────────────────────────── */
+.ticker{
+  position:absolute;left:0;right:0;
+  border-top:3px solid currentColor;border-bottom:3px solid currentColor;
+  overflow:hidden;white-space:nowrap;z-index:4;
+  padding:9px 0;
+}
+.ticker.bottom{bottom:0}
+.ticker .track{
+  display:inline-block;will-change:transform;
+  animation:scrollx 26s linear infinite;
+}
+.ticker .track span{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:clamp(15px,2.4vw,26px);letter-spacing:.02em;
+  padding:0 22px;
+}
+.ticker .track .dot{color:var(--lime)}
+@keyframes scrollx{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── CONCEPT block (lime) ──────────────────────────────────────── */
+.p-concept .inner{
+  position:relative;z-index:3;max-width:1320px;width:100%;margin:0 auto;
+}
+.concept-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;margin-bottom:clamp(22px,4vw,46px);
+}
+.concept-title{
+  font-family:var(--displayko);
+  font-size:clamp(34px,7vw,104px);line-height:.9;letter-spacing:-.01em;max-width:14ch;
+}
+.concept-title em{font-style:normal;background:var(--black);color:var(--lime);padding:0 .12em}
+.concept-intro{
+  max-width:38ch;font-family:var(--body);font-weight:500;
+  font-size:clamp(13px,1.6vw,17px);line-height:1.5;
+}
+.timeline{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:clamp(10px,1.6vw,20px);
+}
+.tl-card{
+  border:3px solid var(--black);
+  background:var(--black);color:var(--lime);
+  padding:clamp(14px,1.8vw,22px);
+  display:flex;flex-direction:column;gap:10px;min-height:230px;
+  position:relative;overflow:hidden;
+}
+.tl-card .yr{
+  font-family:var(--display);font-size:clamp(26px,3.6vw,46px);
+  line-height:.85;color:var(--lime);text-transform:uppercase;
+}
+.tl-card .tag{
+  font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--pink);
+}
+.tl-card h4{font-family:var(--body);font-weight:700;font-size:clamp(13px,1.5vw,16px);line-height:1.2;color:var(--white)}
+.tl-card p{font-family:var(--body);font-weight:400;font-size:clamp(11px,1.2vw,12.5px);line-height:1.45;color:#cfcfcf;margin-top:auto}
+.tl-card .idx{
+  position:absolute;right:-6px;bottom:-22px;font-family:var(--display);
+  font-size:90px;line-height:1;color:rgba(198,255,0,.10);
+}
+
+/* ─── BANK block (pink) ─────────────────────────────────────────── */
+.p-bank .inner{position:relative;z-index:3;max-width:1320px;width:100%;margin:0 auto}
+.bank-head{margin-bottom:clamp(20px,3.5vw,40px)}
+.bank-title{
+  font-family:var(--displayko);
+  font-size:clamp(36px,8vw,118px);line-height:.86;letter-spacing:-.015em;
+}
+.bank-title .stk{color:transparent;-webkit-text-stroke:2px var(--white)}
+.bank-sub{
+  margin-top:14px;max-width:46ch;font-family:var(--body);font-weight:500;
+  font-size:clamp(13px,1.6vw,17px);line-height:1.5;
+}
+.bank-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1.2vw,14px);
+}
+.bank-card{
+  border:3px solid var(--white);background:transparent;color:var(--white);
+  padding:clamp(14px,1.6vw,20px);min-height:clamp(180px,26vh,250px);
+  display:flex;flex-direction:column;gap:10px;
+  transition:background .18s, color .18s, transform .18s;
+  position:relative;overflow:hidden;
+}
+.bank-card .num{font-family:var(--display);font-size:clamp(26px,3vw,40px);line-height:.8}
+.bank-card .en{font-family:var(--mono);font-weight:700;font-size:9px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.bank-card h4{font-family:var(--displayko);font-size:clamp(15px,1.9vw,21px);line-height:1.05}
+.bank-card ul{list-style:none;margin-top:auto;display:flex;flex-direction:column;gap:5px}
+.bank-card li{font-family:var(--body);font-weight:500;font-size:clamp(11px,1.15vw,12.5px);line-height:1.3;padding-left:14px;position:relative}
+.bank-card li::before{content:"▸";position:absolute;left:0;color:var(--lime)}
+.bank-card:hover{background:var(--lime);color:var(--black);transform:translateY(-6px)}
+.bank-card:hover .en,.bank-card:hover li::before{color:var(--black);opacity:1}
+
+/* ─── LAYER block (black) ───────────────────────────────────────── */
+.p-layer .inner{position:relative;z-index:3;max-width:1320px;width:100%;margin:0 auto}
+.layer-head{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:8px}
+.layer-title{
+  font-family:var(--display);text-transform:uppercase;
+  font-size:clamp(46px,12vw,168px);line-height:.82;letter-spacing:-.03em;
+  background:linear-gradient(92deg,var(--lime) 0 33%,var(--pink) 33% 66%,var(--white) 66% 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.layer-sub{font-family:var(--body);font-weight:500;font-size:clamp(13px,1.6vw,17px);color:#bdbdbd;max-width:42ch;margin-bottom:clamp(20px,3.5vw,38px)}
+.layer-rows{display:flex;flex-direction:column;gap:clamp(8px,1.2vw,12px)}
+.layer-row{
+  display:grid;
+  grid-template-columns:clamp(70px,11vw,150px) 1fr auto;
+  align-items:center;gap:clamp(14px,2.5vw,40px);
+  border:3px solid #2a2a2a;padding:clamp(14px,2.2vw,28px);
+  transition:border-color .2s, background .2s;
+  position:relative;overflow:hidden;
+}
+.layer-row .key{
+  font-family:var(--display);font-size:clamp(48px,9vw,118px);line-height:.78;
+}
+.layer-row.b .key{color:var(--lime)}
+.layer-row.p .key{color:var(--pink)}
+.layer-row.f .key{color:var(--blue);-webkit-text-stroke:1.5px var(--white)}
+.layer-row .meta h4{font-family:var(--displayko);font-size:clamp(18px,2.6vw,30px);line-height:1}
+.layer-row .meta .en{font-family:var(--mono);font-weight:700;font-size:clamp(9px,1.1vw,11px);letter-spacing:.16em;text-transform:uppercase;color:#888;margin-top:6px;display:block}
+.layer-row .meta p{font-family:var(--body);font-weight:400;font-size:clamp(12px,1.3vw,14px);line-height:1.45;color:#c5c5c5;margin-top:8px;max-width:48ch}
+.layer-row .step{font-family:var(--mono);font-weight:700;font-size:clamp(10px,1.3vw,13px);letter-spacing:.1em;color:#666}
+.layer-row:hover{border-color:var(--white);background:#141414}
+.layer-row.b:hover{border-color:var(--lime)}
+.layer-row.p:hover{border-color:var(--pink)}
+.layer-row.f:hover{border-color:var(--blue)}
+
+.layer-stats{
+  display:flex;gap:clamp(14px,3vw,52px);flex-wrap:wrap;margin-top:clamp(22px,4vw,44px);
+  border-top:3px solid #2a2a2a;padding-top:clamp(18px,3vw,30px);
+}
+.layer-stats .st .v{font-family:var(--display);font-size:clamp(30px,5vw,64px);line-height:.85;color:var(--lime)}
+.layer-stats .st:nth-child(2) .v{color:var(--pink)}
+.layer-stats .st:nth-child(3) .v{color:var(--white)}
+.layer-stats .st:nth-child(4) .v{color:var(--blue);-webkit-text-stroke:1px var(--white)}
+.layer-stats .st .l{font-family:var(--mono);font-weight:700;font-size:clamp(8px,1vw,10px);letter-spacing:.12em;text-transform:uppercase;color:#888;margin-top:8px;max-width:16ch}
+
+/* section label, top-left of each non-hero poster */
+.sectlabel{
+  font-family:var(--mono);font-weight:700;font-size:clamp(9px,1.2vw,12px);
+  letter-spacing:.24em;text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;margin-bottom:clamp(14px,2vw,22px);
+  position:relative;z-index:3;
+}
+.sectlabel .bar{height:3px;width:clamp(28px,5vw,60px);background:currentColor}
+
+/* ─── Scroll progress dots (right) ──────────────────────────────── */
+.dots{
+  position:fixed;right:clamp(12px,2vw,26px);top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:14px;z-index:50;
+}
+.dots button{
+  width:13px;height:13px;border-radius:50%;border:2.5px solid var(--white);
+  background:transparent;cursor:pointer;padding:0;
+  transition:background .2s, transform .2s, border-color .2s;
+  mix-blend-mode:difference;
+}
+.dots button.active{background:var(--white);transform:scale(1.35)}
+
+/* ─── Corner badge ──────────────────────────────────────────────── */
+.badge{
+  position:fixed;left:clamp(10px,2vw,18px);bottom:clamp(10px,2vw,18px);
+  z-index:60;display:flex;align-items:center;gap:9px;
+  background:var(--black);color:var(--lime);
+  border:2.5px solid var(--lime);
+  padding:7px 12px;
+  font-family:var(--mono);font-weight:700;
+  font-size:clamp(8px,1vw,10px);letter-spacing:.16em;text-transform:uppercase;
+  box-shadow:4px 4px 0 var(--pink);
+}
+.badge .n{
+  background:var(--lime);color:var(--black);padding:2px 6px;
+  font-family:var(--display);font-size:13px;letter-spacing:0;
+}
+
+/* ─── reveal base (for IO / GSAP) ───────────────────────────────── */
+.reveal{opacity:0;transform:translateY(40px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+
+/* spinning shape util */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+/* ─── responsive ────────────────────────────────────────────────── */
+@media(max-width:1024px){
+  .timeline{grid-template-columns:repeat(2,1fr)}
+  .bank-grid{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:680px){
+  .poster{justify-content:flex-start;padding-top:clamp(78px,16vh,110px);padding-bottom:64px}
+  .topnav{display:none}
+  .timeline{grid-template-columns:1fr 1fr}
+  .tl-card{min-height:170px}
+  .bank-grid{grid-template-columns:1fr 1fr}
+  .layer-row{grid-template-columns:clamp(56px,18vw,90px) 1fr;}
+  .layer-row .step{display:none}
+  .dots{display:none}
+  .hero-title{font-size:clamp(46px,15vw,90px)}
+}
+@media(max-width:420px){
+  .bank-grid{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal{opacity:1!important;transform:none!important}
+  .deck{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<nav class="dots" aria-label="섹션 이동">
+  <button data-go="0" class="active" aria-label="Hero"></button>
+  <button data-go="1" aria-label="개념"></button>
+  <button data-go="2" aria-label="Problem Bank"></button>
+  <button data-go="3" aria-label="3LAYER-BPF"></button>
+</nav>
+
+<div class="badge" aria-hidden="true">
+  <span class="n">09</span>
+  <span>MANIFESTO · 부산 BLOCK</span>
+</div>
+
+<main class="deck" id="deck">
+
+  <!-- ════════════ POSTER 01 · HERO (BLUE) ════════════ -->
+  <section class="poster p-hero" id="s0">
+    <div class="bignum" style="font-size:min(72vh,640px);right:-7vw;bottom:-12vh;color:rgba(255,255,255,.06)">01</div>
+
+    <span class="shape circle" data-float style="width:clamp(80px,16vw,230px);height:clamp(80px,16vw,230px);background:var(--lime);top:18%;left:-3vw;z-index:1"></span>
+    <span class="shape ring" data-spin style="width:clamp(120px,22vw,300px);height:clamp(120px,22vw,300px);border:clamp(8px,1.5vw,20px) solid var(--pink);right:7vw;top:10vh;z-index:1"></span>
+    <span class="shape tri" data-float style="border-left:clamp(40px,7vw,90px) solid transparent;border-right:clamp(40px,7vw,90px) solid transparent;border-bottom:clamp(70px,12vw,150px) solid var(--pink);right:30vw;bottom:14vh;z-index:1;transform:rotate(18deg)"></span>
+
+    <div class="topbar">
+      <div class="wordmark">AX<b>·</b>PBL</div>
+      <div class="topnav">
+        <a href="#s1">개념</a>
+        <a href="#s2">Problem Bank</a>
+        <a href="#s3">3LAYER-BPF</a>
+      </div>
+    </div>
+
+    <div class="hero-grid">
+      <div class="hero-eyebrow" data-hero="0">Problem-Based Learning × AI Transformation</div>
+      <h1 class="hero-title" aria-label="문제로 배우고 AI와 함께 해결하는 교육">
+        <span class="ln"><span data-hero="1">문제로 배우고</span></span>
+        <span class="ln"><span class="accent" data-hero="2">AI와 함께</span></span>
+        <span class="ln"><span class="out" data-hero="3">해결하는 교육</span></span>
+      </h1>
+      <div class="hero-bottom">
+        <p class="hero-lead" data-hero="4">부산대학교 AX-PBL은 학부생의 진학 의지와 AX 역량을 동남권 산업 수요와 연결하는 교육·연구개발·산학협력의 복합체입니다.</p>
+        <div class="hero-ctas" data-hero="5">
+          <a class="btn solid" href="#s1">AX-PBL 알아보기</a>
+          <a class="btn ghost" href="#s2">교과목 카탈로그</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticker bottom" aria-hidden="true">
+      <div class="track" id="heroTrack"></div>
+    </div>
+  </section>
+
+  <!-- ════════════ POSTER 02 · CONCEPT / HISTORY (LIME) ════════════ -->
+  <section class="poster p-concept" id="s1">
+    <div class="bignum" style="font-size:min(72vh,640px);left:-5vw;top:-16vh;color:rgba(10,10,10,.07)">69</div>
+    <span class="shape" data-spin style="width:clamp(90px,15vw,210px);height:clamp(90px,15vw,210px);background:var(--pink);right:6vw;bottom:-5vh;z-index:0;border-radius:46% 54% 60% 40%/40% 50% 50% 60%"></span>
+    <span class="shape ring" data-float style="width:clamp(70px,11vw,150px);height:clamp(70px,11vw,150px);border:8px solid var(--blue);right:24vw;top:8vh;z-index:0"></span>
+
+    <div class="inner">
+      <div class="sectlabel"><span class="bar"></span>What is PBL · 개념과 역사</div>
+      <div class="concept-head">
+        <h2 class="concept-title reveal">PBL은 트렌드가 아니라<br><em>반세기 검증된</em> 교수학습 모델</h2>
+        <p class="concept-intro reveal">1969년 McMaster 의과대학 Howard Barrows 교수가 도입한 정통 모델. AX-PBL은 여기에 AI를 더해 문제를 정의·해결하는 현대적 확장입니다.</p>
+      </div>
+
+      <div class="timeline">
+        <article class="tl-card reveal">
+          <div class="yr">1969</div>
+          <div class="tag">McMaster 의대</div>
+          <h4>혁신의 출발</h4>
+          <p>하워드 배로우 교수가 주입식 의학교육의 ‘파편화된 지식’을 극복하려 PBL을 최초 도입.</p>
+          <div class="idx">A</div>
+        </article>
+        <article class="tl-card reveal">
+          <div class="yr">문제</div>
+          <div class="tag">지식의 파편화</div>
+          <h4>외웠지만 진단 못했다</h4>
+          <p>방대한 의학지식을 암기해도 환자를 마주하면 병명을 진단하지 못하는 한계에 직면.</p>
+          <div class="idx">B</div>
+        </article>
+        <article class="tl-card reveal">
+          <div class="yr">해결</div>
+          <div class="tag">Ill-structured</div>
+          <h4>문제를 먼저 던지다</h4>
+          <p>실제 증상 시나리오를 먼저 제시하고 학생이 스스로 진단·치료법을 찾게 한 결과 대성공.</p>
+          <div class="idx">C</div>
+        </article>
+        <article class="tl-card reveal">
+          <div class="yr">NOW</div>
+          <div class="tag">Competency-Based</div>
+          <h4>역량 중심 학습의 핵심</h4>
+          <p>정답 없는 복잡한 현실 문제를 주도적으로 협력·사유하며 해결책을 도출.</p>
+          <div class="idx">D</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ POSTER 03 · PROBLEM BANK (PINK) ════════════ -->
+  <section class="poster p-bank" id="s2">
+    <div class="bignum" style="font-size:min(70vh,600px);right:-6vw;top:-14vh;color:rgba(255,255,255,.07)">05</div>
+    <span class="shape" data-float style="width:clamp(70px,12vw,160px);height:clamp(70px,12vw,160px);background:var(--lime);left:-3vw;bottom:8vh;z-index:0;transform:rotate(15deg)"></span>
+    <span class="shape circle" data-pulse style="width:clamp(60px,10vw,130px);height:clamp(60px,10vw,130px);background:var(--blue);left:34vw;top:6vh;z-index:0"></span>
+
+    <div class="inner">
+      <div class="sectlabel"><span class="bar"></span>Problem Bank · 동남권 수요 기반</div>
+      <div class="bank-head">
+        <h2 class="bank-title reveal">다섯 갈래의<br><span class="stk">PROBLEM BANK</span></h2>
+        <p class="bank-sub reveal">기업·공공기관·지역사회·학내 부서가 문제를 등록하고, 부산대 수업과 현장을 연결하는 문제 매칭 시스템.</p>
+      </div>
+
+      <div class="bank-grid">
+        <article class="bank-card reveal">
+          <div class="num">01</div>
+          <div class="en">Industrial AX</div>
+          <h4>산업 AX 문제</h4>
+          <ul><li>지역기업 AI 도입</li><li>업무 자동화</li><li>고객 데이터 분석</li></ul>
+        </article>
+        <article class="bank-card reveal">
+          <div class="num">02</div>
+          <div class="en">Community</div>
+          <h4>지역사회 문제</h4>
+          <ul><li>전통시장 활성화</li><li>청년 정주</li><li>고령층 디지털 격차</li></ul>
+        </article>
+        <article class="bank-card reveal">
+          <div class="num">03</div>
+          <div class="en">Public Policy</div>
+          <h4>공공정책 문제</h4>
+          <ul><li>행정서비스 개선</li><li>지역·교통·복지</li><li>환경</li></ul>
+        </article>
+        <article class="bank-card reveal">
+          <div class="num">04</div>
+          <div class="en">Culture</div>
+          <h4>문화콘텐츠 문제</h4>
+          <ul><li>지역 스토리텔링</li><li>관광콘텐츠</li><li>캐릭터·브랜드</li></ul>
+        </article>
+        <article class="bank-card reveal">
+          <div class="num">05</div>
+          <div class="en">ESG</div>
+          <h4>ESG 문제</h4>
+          <ul><li>탄소저감</li><li>자원순환</li><li>사회적 가치 측정</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ POSTER 04 · 3LAYER-BPF (BLACK) ════════════ -->
+  <section class="poster p-layer" id="s3">
+    <div class="bignum" style="font-size:min(64vh,560px);left:-4vw;bottom:-18vh;color:rgba(255,255,255,.045)">BPF</div>
+    <span class="shape tri" data-spin style="border-left:clamp(40px,7vw,90px) solid transparent;border-right:clamp(40px,7vw,90px) solid transparent;border-bottom:clamp(70px,12vw,150px) solid var(--lime);right:6vw;top:10vh;z-index:0;opacity:.85"></span>
+    <span class="shape ring" data-float style="width:clamp(90px,14vw,180px);height:clamp(90px,14vw,180px);border:clamp(8px,1.4vw,16px) solid var(--pink);right:22vw;bottom:6vh;z-index:0"></span>
+
+    <div class="inner">
+      <div class="sectlabel" style="color:var(--lime)"><span class="bar"></span>The Model · 세 개의 레이어</div>
+      <div class="layer-head">
+        <h2 class="layer-title reveal">3LAYER-BPF</h2>
+      </div>
+      <p class="layer-sub reveal">기본 이론에서 현장 훈련까지 — Basic → Practical → Field, 세 개의 레이어로 쌓는 AX-PBL.</p>
+
+      <div class="layer-rows">
+        <div class="layer-row b reveal">
+          <div class="key">B</div>
+          <div class="meta">
+            <h4>기본 이론 <span class="en">Basic Theory</span></h4>
+            <p>전공 기초 지식과 문제의 맥락을 이해하는 토대 단계.</p>
+          </div>
+          <div class="step">LAYER 01</div>
+        </div>
+        <div class="layer-row p reveal">
+          <div class="key">P</div>
+          <div class="meta">
+            <h4>실무 역량 <span class="en">Practical Skill</span></h4>
+            <p>AI 도구와 협업하며 분석·설계·검증 역량을 체득하는 단계.</p>
+          </div>
+          <div class="step">LAYER 02</div>
+        </div>
+        <div class="layer-row f reveal">
+          <div class="key">F</div>
+          <div class="meta">
+            <h4>현장 훈련 <span class="en">Field Training</span></h4>
+            <p>산업·지역 현장의 실제 문제에 역량을 적용하고 성과를 축적하는 단계.</p>
+          </div>
+          <div class="step">LAYER 03</div>
+        </div>
+      </div>
+
+      <div class="layer-stats reveal">
+        <div class="st"><div class="v" data-count="21">0</div><div class="l">PBL 명시 항목 (교과목20·운영목표1)</div></div>
+        <div class="st"><div class="v" data-count="4">0</div><div class="l">AX-PBL 운영 기수</div></div>
+        <div class="st"><div class="v" data-count="983">0</div><div class="l">분석 교육과정 분량(쪽)</div></div>
+        <div class="st"><div class="v" data-count="3">0</div><div class="l">복수전공 PBL 최소 학점</div></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var deck = document.getElementById('deck');
+
+  /* ── build hero marquee track (duplicated for seamless loop) ── */
+  var phrases = ['AX·PBL','문제로 배우고','BEYOND KNOWLEDGE','AI와 함께','SOLVE REAL PROBLEMS','부산대학교','PUSAN NATIONAL UNIVERSITY','같이 더 높게'];
+  var trk = document.getElementById('heroTrack');
+  if(trk){
+    var html = '';
+    for(var r=0;r<2;r++){
+      phrases.forEach(function(p){ html += '<span>'+p+'</span><span class="dot">●</span>'; });
+    }
+    trk.innerHTML = html;
+  }
+
+  /* ── progress dots ── */
+  var dotBtns = Array.prototype.slice.call(document.querySelectorAll('.dots button'));
+  var posters = Array.prototype.slice.call(document.querySelectorAll('.poster'));
+  dotBtns.forEach(function(b){
+    b.addEventListener('click',function(){
+      var i = +b.getAttribute('data-go');
+      posters[i].scrollIntoView({behavior: reduce?'auto':'smooth'});
+    });
+  });
+  var dotObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        var idx = posters.indexOf(e.target);
+        dotBtns.forEach(function(b,i){ b.classList.toggle('active', i===idx); });
+      }
+    });
+  },{root:deck, threshold:0.55});
+  posters.forEach(function(p){ dotObs.observe(p); });
+
+  if(reduce){
+    // ensure everything is visible & counters at final value
+    document.querySelectorAll('.reveal').forEach(function(el){el.classList.add('in');});
+    document.querySelectorAll('[data-count]').forEach(function(el){el.textContent=el.getAttribute('data-count');});
+    return;
+  }
+
+  /* ── HERO entrance: big type slam-in ── */
+  if(window.gsap){
+    gsap.set('[data-hero]',{yPercent:115});
+    gsap.set('.hero-title .ln span',{yPercent:115});
+    var tl = gsap.timeline({delay:.15, defaults:{ease:'expo.out'}});
+    tl.to('.hero-title .ln span',{yPercent:0,duration:1.0,stagger:.09})
+      .to('[data-hero="0"]',{yPercent:0,duration:.7},0.05)
+      .to('[data-hero="4"]',{yPercent:0,duration:.8},'-=.55')
+      .to('[data-hero="5"]',{yPercent:0,duration:.8},'-=.7');
+
+    /* hero shapes float / spin via GSAP for smoothness */
+    gsap.to('.p-hero [data-spin]',{rotation:360,repeat:-1,duration:24,ease:'none'});
+  }
+
+  /* ── continuous shape motion (CSS-driven, works without gsap too) ── */
+  document.querySelectorAll('[data-float]').forEach(function(el){ el.style.animation='float 6s ease-in-out infinite'; });
+  document.querySelectorAll('[data-pulse]').forEach(function(el){ el.style.animation='pulse 4s ease-in-out infinite'; });
+  document.querySelectorAll('[data-spin]').forEach(function(el){
+    if(!el.closest('.p-hero')) el.style.animation='spin 30s linear infinite';
+  });
+
+  /* ── ScrollTrigger reveals inside the snap container ── */
+  if(window.gsap && window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    ScrollTrigger.defaults({scroller:'#deck'});
+
+    document.querySelectorAll('.reveal').forEach(function(el){
+      gsap.fromTo(el,{opacity:0,y:46},{
+        opacity:1,y:0,duration:.8,ease:'power3.out',
+        scrollTrigger:{trigger:el, start:'top 88%'}
+      });
+    });
+
+    /* counters */
+    document.querySelectorAll('[data-count]').forEach(function(el){
+      var end = +el.getAttribute('data-count');
+      var obj = {v:0};
+      ScrollTrigger.create({
+        trigger:el, start:'top 90%', once:true,
+        onEnter:function(){
+          gsap.to(obj,{v:end,duration:1.4,ease:'power2.out',
+            onUpdate:function(){ el.textContent = Math.round(obj.v); }});
+        }
+      });
+    });
+
+    /* parallax on giant numerals */
+    document.querySelectorAll('.bignum').forEach(function(el){
+      gsap.to(el,{yPercent:-14, ease:'none',
+        scrollTrigger:{trigger:el.closest('.poster'), start:'top bottom', end:'bottom top', scrub:true}});
+    });
+
+    setTimeout(function(){ ScrollTrigger.refresh(); }, 350);
+  } else {
+    /* fallback: IntersectionObserver reveals */
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{root:deck, threshold:.18});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>

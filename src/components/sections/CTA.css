@@ -1,0 +1,214 @@
+/* ════════════════════════════════════════════════════════════════════════
+   CTA — closing finale section. Animated aurora field + 3 track cards.
+   Colors come ONLY from theme tokens / rgba(var(--glow*), a).
+   ════════════════════════════════════════════════════════════════════════ */
+
+.cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(140% 120% at 50% 120%, rgba(var(--glow-2), 0.16), transparent 60%),
+    var(--bg-deep);
+}
+
+/* ── aurora field ─────────────────────────────────────────────────────────── */
+.cta-field {
+  position: absolute;
+  inset: -12% -8%;
+  z-index: 0;
+  pointer-events: none;
+}
+.cta-aurora {
+  position: absolute;
+  z-index: 0;
+  filter: blur(90px);
+  opacity: calc(0.6 * var(--halo-strength));
+  will-change: transform;
+}
+.cta-aurora--a {
+  width: clamp(360px, 46vw, 680px);
+  height: clamp(360px, 46vw, 680px);
+  top: -8%;
+  left: 4%;
+  background: radial-gradient(circle, rgba(var(--glow), 0.85), transparent 68%);
+}
+.cta-aurora--b {
+  width: clamp(320px, 42vw, 620px);
+  height: clamp(320px, 42vw, 620px);
+  top: 24%;
+  right: -2%;
+  background: radial-gradient(circle, rgba(var(--glow-2), 0.85), transparent 68%);
+}
+.cta-aurora--c {
+  width: clamp(300px, 40vw, 560px);
+  height: clamp(300px, 40vw, 560px);
+  bottom: -16%;
+  left: 32%;
+  background: radial-gradient(circle, rgba(var(--glow-3), 0.7), transparent 70%);
+  opacity: calc(0.42 * var(--halo-strength));
+}
+
+/* slow conic sweep adds drifting iridescence behind the heading */
+.cta-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150vmax;
+  height: 150vmax;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: calc(0.28 * var(--halo-strength));
+  will-change: transform;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(var(--glow), 0.5) 60deg,
+    transparent 130deg,
+    rgba(var(--glow-2), 0.5) 220deg,
+    transparent 290deg,
+    rgba(var(--glow-3), 0.4) 340deg,
+    transparent 360deg
+  );
+  mask-image: radial-gradient(closest-side, rgba(var(--glow), 1) 0%, transparent 72%);
+  -webkit-mask-image: radial-gradient(closest-side, rgba(var(--glow), 1) 0%, transparent 72%);
+}
+
+.cta-grid {
+  z-index: 0;
+  mask-image: radial-gradient(120% 100% at 50% 100%, rgba(var(--glow), 1) 25%, transparent 80%);
+  -webkit-mask-image: radial-gradient(120% 100% at 50% 100%, rgba(var(--glow), 1) 25%, transparent 80%);
+}
+
+/* ── content ──────────────────────────────────────────────────────────────── */
+.cta__inner {
+  position: relative;
+  z-index: 2;
+}
+
+.cta__head {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  max-width: 22ch;
+  margin-bottom: clamp(3rem, 6vw, 5rem);
+}
+.cta-kicker {
+  align-self: flex-start;
+}
+.cta-heading {
+  white-space: pre-line;
+}
+.cta-heading .cta-line {
+  padding-bottom: 0.06em;
+}
+
+/* ── track cards ──────────────────────────────────────────────────────────── */
+.cta__tracks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1.1rem, 2vw, 1.6rem);
+}
+
+.cta-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: clamp(1.6rem, 2.6vw, 2.4rem);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.5s var(--ease-out), border-color 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
+  will-change: transform;
+}
+.cta-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  background: radial-gradient(120% 120% at 0% 0%, rgba(var(--glow), 0.14), transparent 55%);
+  transition: opacity 0.5s var(--ease-out);
+}
+.cta-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--border-strong);
+}
+.cta-card:hover::before {
+  opacity: 1;
+}
+.cta-card:focus-within {
+  border-color: var(--border-strong);
+}
+
+/* top accent edge that lights on hover */
+.cta-card__edge {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--accent-3));
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0.85;
+  transition: transform 0.6s var(--ease-out);
+}
+.cta-card:hover .cta-card__edge {
+  transform: scaleX(1);
+}
+
+.cta-card__index {
+  font-size: 0.92rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  opacity: 0.9;
+}
+.cta-card__who {
+  margin-top: 0.15rem;
+}
+.cta-card__desc {
+  color: var(--text-dim);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  flex: 1 1 auto;
+}
+.cta-card__action {
+  margin-top: 0.6rem;
+}
+.cta-card__action .magnetic {
+  width: 100%;
+}
+.cta-card__action .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+/* ── disclaimer note ──────────────────────────────────────────────────────── */
+.cta-note {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--text-mute);
+  max-width: 60ch;
+}
+
+/* ── responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .cta__tracks {
+    grid-template-columns: 1fr;
+    max-width: 540px;
+  }
+  .cta__head {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .cta-card__action .btn {
+    width: 100%;
+  }
+}

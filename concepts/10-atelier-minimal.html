@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AX·PBL — Atelier</title>
+
+<!-- Fonts: high-contrast serif + refined Korean serif + wide-tracked sans label -->
+<link href="vendor/fonts.css" rel="stylesheet">
+
+<style>
+  :root{
+    --stone:#EFEAE2;        /* base canvas */
+    --stone-deep:#E5DED2;   /* slightly darker stone */
+    --ink:#14110D;          /* deep ink */
+    --ink-soft:#3A352D;     /* soft ink for body */
+    --grey:#8A8175;         /* soft grey */
+    --gold:#B8995A;         /* muted gold */
+    --gold-deep:#9C7E45;
+    --hair:rgba(20,17,13,.16);
+    --serif:'Cormorant', Georgia, serif;
+    --kor:'Nanum Myeongjo', serif;
+    --sans:'Archivo', system-ui, sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--stone);
+    color:var(--ink);
+    font-family:var(--kor);
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  /* subtle paper grain via layered radial noise */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    opacity:.5;mix-blend-mode:multiply;
+    background-image:
+      radial-gradient(circle at 50% 50%, transparent 0, transparent 1px, rgba(20,17,13,.012) 1px, rgba(20,17,13,.012) 2px);
+    background-size:3px 3px;
+  }
+
+  ::selection{background:var(--gold);color:var(--stone)}
+
+  /* ── layout shell ── */
+  .wrap{
+    position:relative;z-index:1;
+    max-width:1180px;margin:0 auto;
+    padding:0 clamp(22px,6vw,96px);
+  }
+
+  .label{
+    font-family:var(--sans);
+    font-weight:500;
+    font-size:11px;
+    letter-spacing:.34em;
+    text-transform:uppercase;
+    color:var(--grey);
+  }
+  .gold-rule{
+    display:block;height:1px;background:var(--gold);border:0;
+    transform-origin:left center;
+  }
+
+  /* ════════ TOP NAV ════════ */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px clamp(22px,6vw,96px);
+    transition:background .6s ease, padding .6s ease, border-color .6s ease;
+    border-bottom:1px solid transparent;
+    mix-blend-mode:normal;
+  }
+  header.nav.scrolled{
+    background:rgba(239,234,226,.86);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hair);
+    padding-top:16px;padding-bottom:16px;
+  }
+  .wordmark{
+    font-family:var(--serif);
+    font-weight:500;font-size:22px;letter-spacing:.02em;
+    color:var(--ink);text-decoration:none;
+    display:flex;align-items:baseline;gap:.1em;
+  }
+  .wordmark .dot{color:var(--gold);font-weight:400}
+  .nav-links{display:flex;gap:clamp(18px,3vw,42px);align-items:center}
+  .nav-links a{
+    font-family:var(--sans);font-size:11px;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--ink-soft);text-decoration:none;
+    position:relative;padding-bottom:4px;transition:color .4s ease;
+  }
+  .nav-links a::after{
+    content:"";position:absolute;left:0;bottom:0;height:1px;width:0;
+    background:var(--gold);transition:width .5s cubic-bezier(.2,.7,.2,1);
+  }
+  .nav-links a:hover{color:var(--ink)}
+  .nav-links a:hover::after{width:100%}
+  .nav-cta{display:none}
+  @media(max-width:780px){
+    .nav-links{display:none}
+    .wordmark{font-size:19px}
+  }
+
+  /* ════════ HERO ════════ */
+  .hero{
+    min-height:100svh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding-top:120px;padding-bottom:80px;
+    position:relative;
+  }
+  .hero .eyebrow{
+    display:flex;align-items:center;gap:18px;
+    opacity:0;transform:translateY(14px);
+  }
+  .hero .eyebrow .tick{width:0;height:1px;background:var(--gold);max-width:64px;flex:0 0 auto}
+  .hero-title{
+    font-family:var(--serif);
+    font-weight:300;
+    font-size:clamp(58px,15vw,200px);
+    line-height:.92;
+    letter-spacing:-.01em;
+    margin:clamp(28px,5vh,54px) 0 clamp(24px,4vh,40px);
+    color:var(--ink);
+  }
+  .hero-title .ax{font-style:italic;font-weight:300}
+  .hero-title .pbl{position:relative}
+  .hero-title .mid-dot{color:var(--gold);font-weight:300;font-style:normal}
+  .hero-kor{
+    font-family:var(--kor);
+    font-weight:400;
+    font-size:clamp(19px,3.4vw,34px);
+    line-height:1.55;
+    color:var(--ink);
+    max-width:18ch;
+    margin-bottom:clamp(26px,4vh,40px);
+  }
+  .hero-kor b{font-weight:800}
+  .hero-kor .gold{color:var(--gold-deep)}
+  .hero-lead{
+    font-family:var(--kor);
+    font-size:clamp(14px,1.5vw,16px);
+    color:var(--ink-soft);
+    max-width:46ch;line-height:1.95;
+    border-left:1px solid var(--gold);
+    padding-left:22px;
+  }
+  /* fade-in stagger targets */
+  .reveal-line{opacity:0;transform:translateY(20px)}
+
+  .hero-meta{
+    position:absolute;
+    right:clamp(22px,6vw,96px);
+    bottom:clamp(34px,8vh,80px);
+    text-align:right;
+    display:flex;flex-direction:column;gap:6px;
+    opacity:0;
+  }
+  .hero-meta .num{font-family:var(--serif);font-size:46px;line-height:1;color:var(--gold);font-weight:400}
+  .hero-meta .cap{font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--grey)}
+  @media(max-width:680px){.hero-meta{display:none}}
+
+  .scroll-hint{
+    position:absolute;left:clamp(22px,6vw,96px);bottom:clamp(28px,5vh,46px);
+    display:flex;align-items:center;gap:12px;
+    font-family:var(--sans);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--grey);
+    opacity:0;
+  }
+  .scroll-hint .vline{width:1px;height:42px;background:var(--gold);position:relative;overflow:hidden}
+  .scroll-hint .vline::after{
+    content:"";position:absolute;top:-42px;left:0;width:1px;height:42px;background:var(--ink);
+    animation:drip 2.6s cubic-bezier(.6,0,.2,1) infinite;
+  }
+  @keyframes drip{0%{top:-42px}55%,100%{top:42px}}
+
+  /* ════════ SECTION SCAFFOLD ════════ */
+  section.chapter{padding:clamp(90px,16vh,200px) 0;position:relative}
+  .chapter-head{
+    display:flex;align-items:flex-start;gap:clamp(18px,4vw,60px);
+    margin-bottom:clamp(46px,9vh,110px);
+  }
+  .chapter-index{
+    font-family:var(--serif);
+    font-weight:300;font-style:italic;
+    font-size:clamp(40px,6vw,86px);
+    line-height:.8;color:var(--gold);
+    flex:0 0 auto;
+  }
+  .chapter-titles{flex:1 1 auto}
+  .chapter-titles .label{margin-bottom:14px;display:block}
+  .chapter-titles h2{
+    font-family:var(--serif);
+    font-weight:400;
+    font-size:clamp(30px,5vw,58px);
+    line-height:1.04;letter-spacing:-.005em;
+    color:var(--ink);
+    max-width:20ch;
+  }
+  .chapter-titles h2 .kor{
+    display:block;font-family:var(--kor);font-weight:700;
+    font-size:clamp(20px,3vw,34px);line-height:1.3;margin-top:.4em;
+  }
+
+  /* ── CONCEPT / HISTORY : slow gallery narrative ── */
+  .lede{
+    font-family:var(--kor);
+    font-size:clamp(16px,2vw,21px);
+    line-height:2;color:var(--ink);
+    max-width:34ch;
+    margin-left:auto;margin-right:0;text-align:left;
+    padding-bottom:clamp(60px,12vh,130px);
+  }
+  .lede .gold{color:var(--gold-deep)}
+
+  .timeline{display:flex;flex-direction:column}
+  .tl-row{
+    display:grid;
+    grid-template-columns:minmax(120px,180px) 1fr;
+    gap:clamp(20px,5vw,80px);
+    padding:clamp(34px,6vh,64px) 0;
+    border-top:1px solid var(--hair);
+    align-items:start;
+  }
+  .tl-row:last-child{border-bottom:1px solid var(--hair)}
+  .tl-year{
+    font-family:var(--serif);
+    font-weight:300;
+    font-size:clamp(38px,5vw,72px);
+    line-height:.95;color:var(--ink);
+  }
+  .tl-year.word{font-family:var(--kor);font-weight:800;font-size:clamp(22px,3vw,38px)}
+  .tl-tag{
+    font-family:var(--sans);font-size:10px;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--gold-deep);margin-top:12px;display:block;
+  }
+  .tl-body h3{
+    font-family:var(--kor);font-weight:700;
+    font-size:clamp(18px,2.4vw,27px);line-height:1.35;
+    color:var(--ink);margin-bottom:14px;
+  }
+  .tl-body p{
+    font-family:var(--kor);font-size:clamp(14px,1.5vw,16px);
+    color:var(--ink-soft);line-height:1.95;max-width:48ch;
+  }
+  .tl-body p .gold{color:var(--gold-deep);font-weight:700}
+
+  /* four pillars row */
+  .pillars{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:1px;background:var(--hair);
+    margin-top:clamp(60px,11vh,120px);
+    border:1px solid var(--hair);
+  }
+  .pillar{
+    background:var(--stone);
+    padding:clamp(26px,3vw,40px) clamp(20px,2.4vw,32px);
+    display:flex;flex-direction:column;gap:14px;min-height:230px;
+  }
+  .pillar .pno{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--gold)}
+  .pillar .pen{font-family:var(--sans);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey)}
+  .pillar .pko{font-family:var(--kor);font-weight:700;font-size:clamp(15px,1.7vw,19px);color:var(--ink);line-height:1.4}
+  .pillar p{font-family:var(--kor);font-size:13px;color:var(--ink-soft);line-height:1.8;margin-top:auto}
+  @media(max-width:860px){.pillars{grid-template-columns:repeat(2,1fr)}.pillar{min-height:200px}}
+  @media(max-width:460px){.pillars{grid-template-columns:1fr}.pillar{min-height:0}}
+
+  /* ── 7 PACKAGES : single column gallery list, huge index ── */
+  .pkg-list{display:flex;flex-direction:column}
+  .pkg{
+    display:grid;
+    grid-template-columns:minmax(90px,150px) 1fr minmax(120px,0.7fr);
+    gap:clamp(18px,4vw,64px);
+    align-items:baseline;
+    padding:clamp(30px,5.5vh,52px) 0;
+    border-top:1px solid var(--hair);
+    position:relative;
+    transition:padding-left .6s cubic-bezier(.2,.7,.2,1);
+  }
+  .pkg:last-child{border-bottom:1px solid var(--hair)}
+  .pkg::before{
+    content:"";position:absolute;left:0;top:0;height:100%;width:0;
+    background:linear-gradient(90deg,rgba(184,153,90,.07),transparent 70%);
+    transition:width .7s cubic-bezier(.2,.7,.2,1);z-index:-1;
+  }
+  .pkg:hover::before{width:100%}
+  .pkg:hover{padding-left:clamp(8px,1.6vw,24px)}
+  .pkg-no{
+    font-family:var(--serif);font-weight:300;
+    font-size:clamp(44px,7vw,96px);line-height:.78;
+    color:var(--stone);
+    -webkit-text-stroke:1px var(--gold);
+    transition:color .6s ease,-webkit-text-stroke-color .6s ease;
+  }
+  .pkg:hover .pkg-no{color:var(--gold);-webkit-text-stroke-color:var(--gold)}
+  .pkg-name h3{
+    font-family:var(--kor);font-weight:700;
+    font-size:clamp(19px,2.6vw,30px);line-height:1.25;color:var(--ink);
+  }
+  .pkg-name .en{
+    font-family:var(--serif);font-style:italic;font-size:clamp(15px,1.7vw,20px);
+    color:var(--gold-deep);margin-top:6px;display:block;
+  }
+  .pkg-body{
+    font-family:var(--kor);font-size:14px;line-height:1.95;color:var(--ink-soft);
+  }
+  @media(max-width:880px){
+    .pkg{grid-template-columns:auto 1fr;gap:18px 22px}
+    .pkg-no{grid-row:1/2}
+    .pkg-name{grid-column:2/3}
+    .pkg-body{grid-column:1/3;max-width:54ch}
+  }
+
+  /* ── CASES : archive ledger ── */
+  .cohorts{display:flex;flex-direction:column;gap:0}
+  .cohort{
+    border-top:1px solid var(--hair);
+    padding:clamp(34px,6vh,60px) 0;
+    display:grid;grid-template-columns:minmax(70px,120px) 1fr;
+    gap:clamp(18px,4vw,56px);
+  }
+  .cohort:last-child{border-bottom:1px solid var(--hair)}
+  .cohort-gen{
+    font-family:var(--serif);font-style:italic;font-weight:300;
+    font-size:clamp(30px,4vw,52px);line-height:.9;color:var(--gold);
+    position:sticky;top:96px;align-self:start;height:fit-content;
+  }
+  .case-items{display:flex;flex-direction:column}
+  .case{
+    display:grid;grid-template-columns:1fr auto;gap:14px 30px;align-items:baseline;
+    padding:clamp(16px,2.6vh,24px) 0;border-bottom:1px dotted var(--hair);
+  }
+  .case:last-child{border-bottom:0}
+  .case-main h4{
+    font-family:var(--kor);font-weight:700;font-size:clamp(16px,2vw,22px);
+    color:var(--ink);line-height:1.35;
+  }
+  .case-main .meta{
+    font-family:var(--sans);font-size:11px;letter-spacing:.06em;color:var(--grey);
+    margin-top:8px;display:block;
+  }
+  .case-main .meta .sep{color:var(--gold)}
+  .status{
+    font-family:var(--sans);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    white-space:nowrap;padding:5px 12px;border:1px solid var(--hair);border-radius:1px;
+    color:var(--ink-soft);align-self:start;
+  }
+  .status.done{border-color:var(--gold);color:var(--gold-deep)}
+  .status.soon{color:var(--grey)}
+  .status.wip{border-color:var(--ink-soft);color:var(--ink)}
+  @media(max-width:560px){
+    .case{grid-template-columns:1fr}
+    .status{justify-self:start}
+  }
+
+  /* ── closing line ── */
+  .coda{
+    text-align:center;padding:clamp(90px,18vh,220px) 0 clamp(70px,12vh,140px);
+  }
+  .coda .mark{font-family:var(--serif);font-style:italic;font-size:clamp(28px,5vw,64px);font-weight:300;line-height:1.2;color:var(--ink);max-width:22ch;margin:0 auto}
+  .coda .mark .gold{color:var(--gold)}
+  .coda .sig{
+    font-family:var(--sans);font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--grey);margin-top:40px;
+  }
+
+  footer{
+    border-top:1px solid var(--hair);
+    padding:38px 0 60px;
+    display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;align-items:baseline;
+  }
+  footer .org{font-family:var(--serif);font-size:18px;color:var(--ink)}
+  footer .fnote{font-family:var(--sans);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey);max-width:40ch;line-height:1.8}
+
+  /* ── corner badge ── */
+  .badge{
+    position:fixed;left:18px;bottom:18px;z-index:50;
+    display:flex;align-items:center;gap:9px;
+    font-family:var(--sans);font-size:10px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--ink-soft);
+    background:rgba(239,234,226,.7);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    border:1px solid var(--hair);
+    padding:7px 12px;border-radius:1px;
+    pointer-events:none;
+  }
+  .badge .bn{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--gold);letter-spacing:0}
+  .badge .bdot{width:3px;height:3px;background:var(--gold);border-radius:50%}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .reveal-line,.hero .eyebrow,.hero-meta,.scroll-hint{opacity:1!important;transform:none!important}
+  }
+</style>
+
+<!-- ════════ NAV ════════ -->
+<header class="nav" id="nav">
+  <a class="wordmark" href="#top">AX<span class="dot">·</span>PBL</a>
+  <nav class="nav-links">
+    <a href="#concept">개념</a>
+    <a href="#packages">콘텐츠</a>
+    <a href="#cases">사례</a>
+    <a href="#coda">함께</a>
+  </nav>
+</header>
+
+<div id="top"></div>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero wrap">
+  <div class="eyebrow" id="hero-eyebrow">
+    <span class="tick" id="hero-tick"></span>
+    <span class="label">Problem-Based Learning &nbsp;×&nbsp; AI Transformation</span>
+  </div>
+
+  <h1 class="hero-title">
+    <span class="ax reveal-line">AX</span><span class="mid-dot reveal-line">·</span><span class="pbl reveal-line">PBL</span>
+  </h1>
+
+  <p class="hero-kor reveal-line">
+    문제로 배우고, <span class="gold">AI</span>와 함께<br><b>해결하는 교육.</b>
+  </p>
+
+  <p class="hero-lead reveal-line">
+    부산대학교 AX-PBL은 학부생의 진학 의지와 AX 역량을 동남권 산업 수요와 연결하는 교육·연구개발·산학협력의 복합체입니다.
+  </p>
+
+  <div class="hero-meta" id="hero-meta">
+    <span class="num">1969</span>
+    <span class="cap">McMaster · Howard Barrows</span>
+  </div>
+
+  <div class="scroll-hint" id="scroll-hint">
+    <span class="vline"></span>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ════════ I. CONCEPT / HISTORY ════════ -->
+<section class="chapter wrap" id="concept">
+  <div class="chapter-head">
+    <span class="chapter-index">I</span>
+    <div class="chapter-titles">
+      <span class="label">What is PBL</span>
+      <h2>A method, not a trend.
+        <span class="kor">반세기 동안 검증된 교수학습 모델</span>
+      </h2>
+    </div>
+  </div>
+
+  <p class="lede" data-reveal>
+    PBL(Problem-Based Learning)은 일시적인 교육 트렌드가 아닌, 반세기 동안 고등교육의 효과성을 입증해 온 <span class="gold">정통성 있는 교수학습 모델</span>입니다.
+  </p>
+
+  <div class="timeline">
+    <div class="tl-row" data-reveal>
+      <div>
+        <div class="tl-year">1969</div>
+        <span class="tl-tag">McMaster Medical School</span>
+      </div>
+      <div class="tl-body">
+        <h3>혁신의 출발</h3>
+        <p>하워드 배로우(Howard Barrows) 교수가 주입식 의학 교육의 한계 — <span class="gold">‘파편화된 지식’</span>을 극복하기 위해 PBL을 최초로 도입했습니다.</p>
+      </div>
+    </div>
+
+    <div class="tl-row" data-reveal>
+      <div>
+        <div class="tl-year word">문제</div>
+        <span class="tl-tag">Fragmented Knowledge</span>
+      </div>
+      <div class="tl-body">
+        <h3>암기는 했지만 진단하지 못했다</h3>
+        <p>당시 의대생들은 엄청난 양의 의학 지식을 외웠지만, 정작 병원 현장에서 환자를 마주했을 때 병명을 진단하지 못하는 심각한 ‘지식의 파편화’를 겪었습니다.</p>
+      </div>
+    </div>
+
+    <div class="tl-row" data-reveal>
+      <div>
+        <div class="tl-year word">해결</div>
+        <span class="tl-tag">Ill-structured Problem</span>
+      </div>
+      <div class="tl-body">
+        <h3>문제를 먼저 던지다</h3>
+        <p>배로우 교수는 주입식 강의를 버리고, 실제 환자의 증상 시나리오(문제)를 먼저 던진 뒤 학생이 스스로 진단하고 치료법을 찾게 했습니다. 결과는 대성공, <span class="gold">전 세계로 확산</span>되었습니다.</p>
+      </div>
+    </div>
+
+    <div class="tl-row" data-reveal>
+      <div>
+        <div class="tl-year word">지금</div>
+        <span class="tl-tag">Competency-Based</span>
+      </div>
+      <div class="tl-body">
+        <h3>역량 중심 학습의 핵심</h3>
+        <p>단일한 정답이 없는 복잡한 현실 세계의 문제를 중심으로, 학습자가 주도적으로 협력·사유하며 해결책을 도출하는 역량 중심 학습(Competency-Based Learning)의 핵심입니다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pillars" data-reveal>
+    <div class="pillar">
+      <span class="pno">i</span>
+      <span class="pen">Self-directed</span>
+      <span class="pko">자기주도적 학습</span>
+      <p>교수가 지식을 주입하는 것이 아니라, 학생이 스스로 필요한 지식을 찾아 나섭니다.</p>
+    </div>
+    <div class="pillar">
+      <span class="pno">ii</span>
+      <span class="pen">Collaborative</span>
+      <span class="pko">협동 학습</span>
+      <p>팀원들과 소통·토론하며 집단지성으로 문제를 해결합니다.</p>
+    </div>
+    <div class="pillar">
+      <span class="pno">iii</span>
+      <span class="pen">Ill-structured</span>
+      <span class="pko">비구조화 문제</span>
+      <p>정답이 정해져 있지 않고 현실에 존재할 법한 복잡한 문제를 해결하며 지식을 습득합니다.</p>
+    </div>
+    <div class="pillar">
+      <span class="pno">iv</span>
+      <span class="pen">Facilitator</span>
+      <span class="pko">퍼실리테이터</span>
+      <p>교수는 ‘지식 전달자’가 아닌, 올바른 방향으로 길을 열어주는 ‘조력자·안내자’입니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ II. 7 PACKAGES ════════ -->
+<section class="chapter wrap" id="packages">
+  <div class="chapter-head">
+    <span class="chapter-index">II</span>
+    <div class="chapter-titles">
+      <span class="label">Teaching Studio</span>
+      <h2>The Collection.
+        <span class="kor">AX-PBL 콘텐츠 7대 패키지</span>
+      </h2>
+    </div>
+  </div>
+
+  <div class="pkg-list">
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">01</div>
+      <div class="pkg-name"><h3>3LAYER-BPF 콘텐츠</h3><span class="en">Basic → Practical → Field</span></div>
+      <div class="pkg-body">기본 이론(Basic Theory) → 실무 역량(Practical Skill) → 현장 훈련(Field Training)의 3단계 구조.</div>
+    </div>
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">02</div>
+      <div class="pkg-name"><h3>문제해결형 AX-PBL</h3><span class="en">Problem-Solving Model</span></div>
+      <div class="pkg-body">학생이 문제를 직접 발견하고, AI와 함께 분석한 뒤 실행 가능한 해결안을 설계·검증하는 수업 모델.</div>
+    </div>
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">03</div>
+      <div class="pkg-name"><h3>산업·지역 Problem Bank</h3><span class="en">Problem Bank</span></div>
+      <div class="pkg-body">기업·공공기관·지역사회·학내 부서가 문제를 등록하는 문제은행. 수업과 현장을 잇는 매칭 시스템.</div>
+    </div>
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">04</div>
+      <div class="pkg-name"><h3>AI Co-Design Studio</h3><span class="en">AI Co-Design Studio</span></div>
+      <div class="pkg-body">AI를 검색 도구가 아니라 수업설계·문제해결의 공동 설계자로. 분석가·비판자·정책자문가 역할을 부여합니다.</div>
+    </div>
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">05</div>
+      <div class="pkg-name"><h3>AX Impact Portfolio</h3><span class="en">AX Impact Portfolio</span></div>
+      <div class="pkg-body">학생 산출물을 역량 증빙, 취업·진로 포트폴리오, 우수사례, 성과보고 자료로 자동 축적합니다.</div>
+    </div>
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">06</div>
+      <div class="pkg-name"><h3>표준 강의계획 템플릿</h3><span class="en">Course Design Template</span></div>
+      <div class="pkg-body">전공별 학습 목표와 생성형 AI 프롬프트를 연계해, 클릭 몇 번으로 표준 강의계획서를 수립합니다.</div>
+    </div>
+    <div class="pkg" data-reveal>
+      <div class="pkg-no">07</div>
+      <div class="pkg-name"><h3>역량 인증 &amp; 시각화</h3><span class="en">Competency Certification</span></div>
+      <div class="pkg-body">AI 협업 문제해결 과정을 추적하여 검증된 역량 인증서 형태로 자동 시각화·축적하는 인증 체계.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ III. CASES ════════ -->
+<section class="chapter wrap" id="cases">
+  <div class="chapter-head">
+    <span class="chapter-index">III</span>
+    <div class="chapter-titles">
+      <span class="label">In Practice · 1기 — 4기</span>
+      <h2>The Ledger.
+        <span class="kor">3LAYER-BPF AX-PBL 운영 사례</span>
+      </h2>
+    </div>
+  </div>
+
+  <div class="cohorts">
+    <!-- 1기 -->
+    <div class="cohort" data-reveal>
+      <div class="cohort-gen">I</div>
+      <div class="case-items">
+        <div class="case">
+          <div class="case-main">
+            <h4>자산관리 캡스톤 디자인</h4>
+            <span class="meta">경영학과 <span class="sep">/</span> 캠코 산학연계</span>
+          </div>
+          <span class="status done">개설완료</span>
+        </div>
+        <div class="case">
+          <div class="case-main">
+            <h4>지역사회 콘텐츠 개발</h4>
+            <span class="meta">디자인학과 <span class="sep">/</span> 동구청 · 동래·서문시장</span>
+          </div>
+          <span class="status done">개설완료</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2기 -->
+    <div class="cohort" data-reveal>
+      <div class="cohort-gen">II</div>
+      <div class="case-items">
+        <div class="case">
+          <div class="case-main">
+            <h4>에너지-환경-경제 실습</h4>
+            <span class="meta">경제학부 <span class="sep">/</span> 에너지경제연구원 · 환경연구원</span>
+          </div>
+          <span class="status soon">26년 2학기 예정</span>
+        </div>
+        <div class="case">
+          <div class="case-main">
+            <h4>글로벌 마켓 5.0 — 디지털 무역과 컨벤션 전략</h4>
+            <span class="meta">무역학부 <span class="sep">/</span> 벡스코 · 부산경제진흥원</span>
+          </div>
+          <span class="status soon">26년 2학기 예정</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3기 -->
+    <div class="cohort" data-reveal>
+      <div class="cohort-gen">III</div>
+      <div class="case-items">
+        <div class="case">
+          <div class="case-main">
+            <h4>회계감사 프로젝트 랩</h4>
+            <span class="meta">경영학과 <span class="sep">/</span> 성현회계법인 · 부산지방공인회계사회</span>
+          </div>
+          <span class="status soon">26년 2학기 예정</span>
+        </div>
+        <div class="case">
+          <div class="case-main">
+            <h4>에코데이터 사이언스 — 공공빅데이터 기반 지역 건강성 분석</h4>
+            <span class="meta">미생물학과 <span class="sep">/</span> 국립생태원 · 부산환경공단 · 부산시청</span>
+          </div>
+          <span class="status done">개설완료</span>
+        </div>
+        <div class="case">
+          <div class="case-main">
+            <h4>산학공감 AI+X 프로젝트</h4>
+            <span class="meta">AI융합교육원 <span class="sep">/</span> (재) 네이버커넥트</span>
+          </div>
+          <span class="status done">개설완료</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4기 -->
+    <div class="cohort" data-reveal>
+      <div class="cohort-gen">IV</div>
+      <div class="case-items">
+        <div class="case">
+          <div class="case-main">
+            <h4>Port Risk Studio — AI·데이터 항만·무역 리스크</h4>
+            <span class="meta">무역학부 <span class="sep">/</span> 신항만주식회사</span>
+          </div>
+          <span class="status wip">연구 진행중</span>
+        </div>
+        <div class="case">
+          <div class="case-main">
+            <h4>부산형 그린인프라 성능평가 스튜디오</h4>
+            <span class="meta">조경학과 <span class="sep">/</span> 부산도시공사 · 부산시청</span>
+          </div>
+          <span class="status wip">연구 진행중</span>
+        </div>
+        <div class="case">
+          <div class="case-main">
+            <h4>스마트 해상물류 관리</h4>
+            <span class="meta">경영학과 <span class="sep">/</span> 경영대학</span>
+          </div>
+          <span class="status wip">연구 진행중</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CODA ════════ -->
+<section class="chapter wrap coda" id="coda">
+  <p class="mark" data-reveal>
+    지식의 습득을 넘어,<br><span class="gold">AI와 함께</span> 문제를 정의하고<br>해결하는 실천적 교육.
+  </p>
+  <p class="sig">Arise PNU &nbsp;·&nbsp; 같이 더 높게</p>
+</section>
+
+<footer class="wrap">
+  <span class="org">부산대학교 <span style="font-style:italic;font-family:var(--serif);color:var(--gold)">Pusan National University</span></span>
+  <span class="fnote">PNU AX-PBL Teaching Studio · 평가지표: PBL 명시 21건 · 운영 4기 · Problem Bank 5분류 · 교육과정 983쪽 분석</span>
+</footer>
+
+<!-- corner badge -->
+<div class="badge">
+  <span class="bn">10</span>
+  <span class="bdot"></span>
+  <span>Atelier</span>
+</div>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // nav scroll state
+  var nav = document.getElementById('nav');
+  function onScroll(){
+    if(window.scrollY > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  if(reduce || typeof gsap === 'undefined'){
+    document.querySelectorAll('.reveal-line,[data-reveal]').forEach(function(el){
+      el.style.opacity=1; el.style.transform='none';
+    });
+    var t=document.getElementById('hero-tick'); if(t) t.style.maxWidth='64px';
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ── HERO entrance : slow, refined ──
+  var tl = gsap.timeline({defaults:{ease:'power2.out'}});
+  tl.to('#hero-eyebrow', {opacity:1, y:0, duration:1.1}, 0)
+    .fromTo('#hero-tick', {width:0}, {width:64, duration:1.3, ease:'power3.inOut'}, 0.1)
+    .to('.hero-title .reveal-line', {opacity:1, y:0, duration:1.4, stagger:0.12}, 0.35)
+    .to('.hero-kor', {opacity:1, y:0, duration:1.2}, 0.9)
+    .to('.hero-lead', {opacity:1, y:0, duration:1.2}, 1.15)
+    .to('#hero-meta', {opacity:1, duration:1.4}, 1.3)
+    .to('#scroll-hint', {opacity:1, duration:1.2}, 1.5);
+
+  // ── scroll reveals : long fades ──
+  gsap.utils.toArray('[data-reveal]').forEach(function(el){
+    gsap.fromTo(el, {opacity:0, y:34}, {
+      opacity:1, y:0, duration:1.25, ease:'power2.out',
+      scrollTrigger:{trigger:el, start:'top 86%'}
+    });
+  });
+
+  // ── thin gold hairline that grows on chapter heads ──
+  gsap.utils.toArray('.chapter-titles').forEach(function(){});
+  gsap.utils.toArray('.chapter-index').forEach(function(idx){
+    gsap.fromTo(idx, {opacity:0, x:-18}, {
+      opacity:1, x:0, duration:1.1, ease:'power2.out',
+      scrollTrigger:{trigger:idx, start:'top 88%'}
+    });
+  });
+})();
+</script>
+</html>

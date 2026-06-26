@@ -1,0 +1,372 @@
+/* ════════════════════════════════════════════════════════════════════════
+   PACKAGES — asymmetric bento of the 7 AX-PBL content packages.
+   Signature: neon draw-border on hover (DrawSVG) + number micro-shift.
+   Colors ONLY from theme tokens / rgba(var(--glow*), a).
+   ════════════════════════════════════════════════════════════════════════ */
+
+.pkg {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.pkg__halo {
+  z-index: 0;
+}
+.pkg__halo--1 {
+  width: 560px;
+  height: 560px;
+  background: rgba(var(--glow), 0.5);
+  top: -180px;
+  right: -120px;
+}
+.pkg__halo--2 {
+  width: 480px;
+  height: 480px;
+  background: rgba(var(--glow-2), 0.42);
+  bottom: -200px;
+  left: -140px;
+}
+.pkg .grid-overlay {
+  mask-image: radial-gradient(120% 90% at 80% 0%, rgba(var(--glow), 1) 25%, transparent 80%);
+  -webkit-mask-image: radial-gradient(120% 90% at 80% 0%, rgba(var(--glow), 1) 25%, transparent 80%);
+}
+.pkg .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── header row ─────────────────────────────────────────────────────────── */
+.pkg__head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4rem);
+}
+.pkg__count {
+  flex-shrink: 0;
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  color: var(--text-mute);
+  padding-bottom: 0.4rem;
+  white-space: nowrap;
+}
+.pkg__count em {
+  font-style: normal;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: var(--accent);
+  margin-right: 0.3em;
+  vertical-align: -0.12em;
+}
+
+/* ── bento grid ─────────────────────────────────────────────────────────── */
+.pkg-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: minmax(172px, auto);
+  grid-auto-flow: dense;
+  gap: clamp(0.85rem, 1.4vw, 1.25rem);
+}
+
+/* default tile = 2 cols wide, 1 row */
+.pkg-tile {
+  grid-column: span 2;
+  grid-row: span 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: clamp(1.4rem, 2.2vw, 2rem);
+  overflow: hidden;
+  cursor: default;
+  outline: none;
+  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out),
+    border-color 0.4s var(--ease-out), background-color 0.4s var(--ease-out);
+  will-change: transform;
+}
+.pkg-tile::after {
+  /* inner accent wash that intensifies on hover */
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    130% 120% at 100% 0%,
+    rgba(var(--glow), calc(0.16 * var(--halo-strength))),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+  pointer-events: none;
+  z-index: 0;
+}
+.pkg-tile:hover,
+.pkg-tile:focus-visible {
+  transform: translateY(-5px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card),
+    0 0 36px -6px rgba(var(--glow), calc(0.42 * var(--halo-strength)));
+}
+.pkg-tile:hover::after,
+.pkg-tile:focus-visible::after {
+  opacity: 1;
+}
+.pkg-tile:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* asymmetric spans — explicit placement tiles a 6-col grid with no gaps.
+   Row 1-2: [01 feature 3x2][02 3-wide / 03 3-wide stacked]
+   Row 3:   [04 2][05 2][06 2]
+   Row 4:   [07 full-width finale] */
+.pkg-tile--01 {
+  grid-column: 1 / span 3;
+  grid-row: 1 / span 2;
+}
+.pkg-tile--02 {
+  grid-column: 4 / span 3;
+}
+.pkg-tile--03 {
+  grid-column: 4 / span 3;
+}
+.pkg-tile--04 {
+  grid-column: 1 / span 2;
+}
+.pkg-tile--05 {
+  grid-column: 3 / span 2;
+}
+.pkg-tile--06 {
+  grid-column: 5 / span 2;
+}
+.pkg-tile--07 {
+  grid-column: 1 / span 6;
+}
+
+/* ── neon draw-border (DrawSVG paints this rect on hover) ─────────────────── */
+.pkg-draw {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  overflow: visible;
+}
+.pkg-draw__rect {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  filter: drop-shadow(0 0 6px rgba(var(--glow), calc(0.7 * var(--halo-strength))));
+}
+
+/* ── tile content ──────────────────────────────────────────────────────── */
+.pkg-tile__top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.pkg-no {
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  will-change: transform;
+}
+.pkg-tile--feature .pkg-no {
+  font-size: clamp(3.4rem, 6vw, 5.2rem);
+}
+.pkg-en {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  text-align: right;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.pkg-tile__body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+.pkg-name {
+  font-size: clamp(1.15rem, 1.5vw, 1.5rem);
+}
+.pkg-tile--feature .pkg-name {
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+}
+.pkg-desc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+/* clamp body on the compact single-row tiles so the bento stays tidy */
+.pkg-tile--04 .pkg-desc,
+.pkg-tile--05 .pkg-desc,
+.pkg-tile--06 .pkg-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pkg-tile__corner {
+  position: absolute;
+  right: clamp(1.4rem, 2.2vw, 2rem);
+  bottom: clamp(1.1rem, 1.8vw, 1.5rem);
+  z-index: 2;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--text-mute);
+  opacity: 0.55;
+  transition: opacity 0.4s var(--ease-out), color 0.4s var(--ease-out);
+}
+.pkg-tile:hover .pkg-tile__corner,
+.pkg-tile:focus-visible .pkg-tile__corner {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* ── feature layer-stack visual (3LAYER-BPF) ──────────────────────────────── */
+.pkg-layers {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 0.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+}
+.pkg-layer {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.pkg-layer__key {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  font-size: 0.9rem;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+}
+.pkg-layer__bar {
+  height: 6px;
+  flex: 1;
+  border-radius: var(--r-pill);
+  /* each successive layer reaches further — Basic → Practical → Field */
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--glow), 0.85),
+    rgba(var(--glow-2), 0.85)
+  );
+  transform-origin: left center;
+  transform: scaleX(calc(0.5 + 0.25 * (var(--i) + 1)));
+  box-shadow: 0 0 14px -2px rgba(var(--glow), calc(0.6 * var(--halo-strength)));
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — collapse the bento; keep reveal stagger (handled in JS).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* tablet: 4-col grid, soften the asymmetry. 01 leads full-width, rest pair up. */
+@media (max-width: 960px) {
+  .pkg-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(160px, auto);
+    grid-auto-flow: row;
+  }
+  .pkg-tile,
+  .pkg-tile--01,
+  .pkg-tile--02,
+  .pkg-tile--03,
+  .pkg-tile--04,
+  .pkg-tile--05,
+  .pkg-tile--06,
+  .pkg-tile--07 {
+    grid-column: auto / span 2;
+    grid-row: auto;
+  }
+  /* feature 01 + finale 07 keep prominence at full width */
+  .pkg-tile--01,
+  .pkg-tile--07 {
+    grid-column: 1 / span 4;
+  }
+}
+
+/* small tablet / large phone: 2 equal columns */
+@media (max-width: 720px) {
+  .pkg__head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.4rem;
+  }
+  .pkg__count {
+    padding-bottom: 0;
+  }
+  .pkg-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .pkg-tile,
+  .pkg-tile--01,
+  .pkg-tile--02,
+  .pkg-tile--03,
+  .pkg-tile--04,
+  .pkg-tile--05,
+  .pkg-tile--06,
+  .pkg-tile--07 {
+    grid-column: auto / span 2;
+  }
+  /* show full body once tiles are wider */
+  .pkg-tile .pkg-desc {
+    display: block;
+    -webkit-line-clamp: none;
+    overflow: visible;
+  }
+}
+
+/* phone: single column, equal tiles */
+@media (max-width: 520px) {
+  .pkg-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .pkg-tile,
+  .pkg-tile--01,
+  .pkg-tile--02,
+  .pkg-tile--03,
+  .pkg-tile--04,
+  .pkg-tile--05,
+  .pkg-tile--06,
+  .pkg-tile--07 {
+    grid-column: 1 / -1;
+  }
+  .pkg-tile__corner {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pkg-tile {
+    transition: none;
+  }
+  .pkg-layer__bar {
+    box-shadow: none;
+  }
+}

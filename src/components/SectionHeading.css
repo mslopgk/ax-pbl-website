@@ -1,0 +1,19 @@
+.sh {
+  position: relative;
+  z-index: 2;
+}
+.sh--center {
+  align-items: center;
+  text-align: center;
+  margin-inline: auto;
+}
+.sh-sub {
+  max-width: 64ch;
+}
+.sh--center .sh-sub {
+  margin-inline: auto;
+}
+/* SplitText mask lines need a hair of vertical breathing room */
+.sh-line {
+  padding-bottom: 0.04em;
+}

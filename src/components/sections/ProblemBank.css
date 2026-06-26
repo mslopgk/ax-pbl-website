@@ -1,0 +1,312 @@
+/* ════════════════════════════════════════════════════════════════════════
+   PROBLEM BANK — interactive category explorer (.pbank-)
+   ════════════════════════════════════════════════════════════════════════ */
+.pbank {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.pbank__inner {
+  position: relative;
+  z-index: 2;
+}
+.pbank__halo {
+  z-index: 0;
+}
+.pbank__halo--1 {
+  width: 460px;
+  height: 460px;
+  background: rgba(var(--glow), 0.4);
+  top: -140px;
+  right: -120px;
+}
+.pbank__halo--2 {
+  width: 420px;
+  height: 420px;
+  background: rgba(var(--glow-2), 0.36);
+  bottom: -180px;
+  left: -140px;
+}
+
+/* framing note: 부산대 수업 ↔ 산업·지역 현장 */
+.pbank__note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1.6rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 0.82rem;
+  color: var(--text-dim);
+}
+.pbank__note-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(var(--glow), calc(0.9 * var(--halo-strength)));
+}
+.pbank__note-a {
+  color: var(--text);
+}
+.pbank__note-b {
+  color: var(--accent);
+}
+.pbank__note-link {
+  color: var(--text-mute);
+  font-family: var(--font-mono);
+}
+
+/* ── explorer grid ───────────────────────────────────────────────────────── */
+.pbank__explorer {
+  margin-top: clamp(2.4rem, 5vw, 3.6rem);
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) 1.15fr;
+  gap: clamp(1.4rem, 3vw, 2.6rem);
+  align-items: start;
+}
+
+/* ── category list (selector) ────────────────────────────────────────────── */
+.pbank__list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+/* sliding active highlight — GSAP drives x/y/width/height */
+.pbank__indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 60px;
+  border-radius: var(--r-md);
+  background: linear-gradient(
+    100deg,
+    rgba(var(--glow), 0.16),
+    rgba(var(--glow-2), 0.12)
+  );
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 0 24px -6px rgba(var(--glow), calc(0.55 * var(--halo-strength))),
+    var(--shadow-1);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, width, height;
+}
+
+.pbank__cat {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  text-align: left;
+  padding: 1rem 1.15rem;
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  transition: color 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+}
+.pbank__cat:hover {
+  color: var(--text);
+  transform: translateX(3px);
+}
+.pbank__cat.is-active {
+  color: var(--text);
+}
+.pbank__cat-num {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-mute);
+  letter-spacing: 0.04em;
+  transition: color 0.35s var(--ease-out);
+}
+.pbank__cat.is-active .pbank__cat-num {
+  color: var(--accent);
+}
+.pbank__cat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.pbank__cat-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.08rem;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.pbank__cat-en {
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.pbank__cat-arrow {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+}
+.pbank__cat.is-active .pbank__cat-arrow,
+.pbank__cat:hover .pbank__cat-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── detail panel ────────────────────────────────────────────────────────── */
+.pbank__detail {
+  padding: clamp(1.7rem, 3vw, 2.6rem);
+  overflow: hidden;
+}
+.pbank__detail::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    120% 90% at 100% 0%,
+    rgba(var(--glow), 0.08),
+    transparent 55%
+  );
+  pointer-events: none;
+}
+.pbank__detail-head {
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  margin-bottom: 1.8rem;
+}
+.pbank__index {
+  font-size: clamp(3.2rem, 7vw, 5rem);
+  font-weight: 600;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  background: linear-gradient(150deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  flex-shrink: 0;
+}
+.pbank__detail-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.pbank__detail-en {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.pbank__detail-name {
+  color: var(--text);
+}
+.pbank__detail-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  padding-bottom: 0.9rem;
+  margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--border);
+}
+.pbank__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.pbank__item {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.05rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  transition: border-color 0.3s var(--ease-out), transform 0.3s var(--ease-out),
+    background-color 0.3s var(--ease-out);
+}
+.pbank__item:hover {
+  border-color: var(--border-strong);
+  transform: translateX(4px);
+}
+.pbank__item-mark {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(var(--glow), calc(0.8 * var(--halo-strength)));
+  transform: rotate(45deg);
+}
+.pbank__item-text {
+  font-size: 1rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.pbank__detail-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.7rem;
+  padding-top: 1.3rem;
+  border-top: 1px solid var(--border);
+}
+.pbank__count {
+  border-color: var(--border-strong);
+  color: var(--accent);
+}
+.pbank__detail-meta {
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  color: var(--text-mute);
+}
+
+/* ── responsive: stack vertically; NO horizontal-scroll selector < 860px ──── */
+@media (max-width: 880px) {
+  .pbank__explorer {
+    grid-template-columns: 1fr;
+    gap: 1.6rem;
+  }
+}
+
+/* Under 860px the selector stays a non-overflowing vertical stack — no
+   horizontal scroll / pinned behaviour (keeps the GSAP indicator in sync and
+   avoids horizontal page overflow on touch). */
+@media (max-width: 860px) {
+  .pbank__list {
+    flex-direction: column;
+    gap: 0.6rem;
+    overflow: visible;
+  }
+  .pbank__cat {
+    width: 100%;
+    padding: 0.85rem 1rem;
+  }
+  .pbank__cat:hover {
+    transform: none;
+  }
+  .pbank__cat-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 440px) {
+  .pbank__detail-head {
+    gap: 1rem;
+  }
+  .pbank__note {
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+}

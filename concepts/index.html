@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AX·PBL — 디자인 시안 12종 (1~12)</title>
+    <link
+      rel="stylesheet"
+      href="/concepts/vendor/fonts.css"
+    />
+    <link
+      rel="stylesheet"
+      href="/concepts/vendor/fonts.css"
+    />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --bg: #0c0f1c; --panel: #141a2e; --line: rgba(255,255,255,.1);
+        --tx: #eaf0ff; --dim: #9aa6cc; --mut: #67719c; --acc: #00e5ff; --acc2: #7c5cff;
+      }
+      body {
+        font-family: 'Pretendard Variable', sans-serif; background: var(--bg);
+        color: var(--tx); line-height: 1.6; -webkit-font-smoothing: antialiased;
+        padding: clamp(28px, 6vw, 80px); overflow-x: hidden;
+      }
+      .mono { font-family: 'JetBrains Mono', monospace; }
+      header { max-width: 1180px; margin: 0 auto clamp(30px,4vw,52px); }
+      .eyebrow {
+        font-family: 'JetBrains Mono', monospace; font-size: .76rem; letter-spacing: .24em;
+        text-transform: uppercase; color: var(--acc); display: inline-flex; gap: .6em; align-items: center;
+      }
+      .eyebrow::before { content:''; width: 28px; height: 1px; background: currentColor; }
+      h1 { font-size: clamp(1.9rem, 4.5vw, 3.1rem); font-weight: 700; letter-spacing: -.03em; margin: 1rem 0 .8rem; }
+      .sub { color: var(--dim); max-width: 64ch; }
+      .group { max-width: 1180px; margin: 0 auto; }
+      .group-head { display: flex; align-items: baseline; gap: .9rem; flex-wrap: wrap;
+        margin: clamp(30px,4vw,48px) 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+      .group-head h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.01em; }
+      .group-head .tag { font-family:'JetBrains Mono',monospace; font-size:.72rem; color: var(--mut); }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 20px; }
+      .card {
+        position: relative; display: flex; flex-direction: column; background: var(--panel);
+        border: 1px solid var(--line); border-radius: 18px; padding: 24px;
+        text-decoration: none; color: inherit;
+        transition: transform .35s cubic-bezier(.22,1,.36,1), border-color .3s, box-shadow .3s;
+      }
+      .card:hover { transform: translateY(-4px); border-color: var(--acc);
+        box-shadow: 0 24px 60px -30px rgba(0,229,255,.45); }
+      .card--theme:hover { border-color: var(--acc2); box-shadow: 0 24px 60px -30px rgba(124,92,255,.45); }
+      .num { font-family:'JetBrains Mono',monospace; font-size:.8rem; color: var(--mut); letter-spacing:.1em; }
+      .name { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; margin: .3rem 0 .1rem; }
+      .en { font-family:'JetBrains Mono',monospace; font-size:.72rem; color: var(--acc); letter-spacing:.05em; text-transform: uppercase; }
+      .card--theme .en { color: var(--acc2); }
+      .desc { color: var(--dim); font-size: .9rem; margin: .85rem 0 1rem; flex: 1; }
+      .swatches { display: flex; gap: 0; margin-bottom: .9rem; border-radius: 8px; overflow: hidden; height: 24px; border: 1px solid var(--line); }
+      .swatches i { flex: 1; display: block; }
+      .meta { font-family:'JetBrains Mono',monospace; font-size:.7rem; color: var(--mut); margin-bottom: .9rem; }
+      .open { font-family:'JetBrains Mono',monospace; font-size:.8rem; color: var(--acc); display: inline-flex; gap: .5em; }
+      .card--theme .open { color: var(--acc2); }
+      .pill { position:absolute; top:18px; right:18px; font-family:'JetBrains Mono',monospace;
+        font-size:.6rem; letter-spacing:.08em; padding:.25em .6em; border-radius:99px; border:1px solid var(--line); color: var(--mut); }
+      .note { max-width: 1180px; margin: 44px auto 0; color: var(--mut); font-size: .82rem; font-family:'JetBrains Mono',monospace; line-height:1.7; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="eyebrow">Design Exploration · 시안 1–12</span>
+      <h1>AX·PBL 디자인 시안 12종</h1>
+      <p class="sub">
+        <b>시안 1–4</b> 는 현재 라이브 사이트의 <b>색상 4종</b>입니다 — 디자인은 같고 색만 실시간으로 바뀝니다.
+        <b>시안 5–10</b> 은 구조·레이아웃·짜임까지 통째로 다른 <b>별도 디자인</b> 6종이며,
+        <b>시안 11–12</b> 는 3D로 직접 둘러보는 <b>인터랙티브 시안</b>입니다.
+      </p>
+    </header>
+
+    <div class="group">
+      <div class="group-head">
+        <h2>① 색상 4종 · 시안 1–4</h2>
+        <span class="tag">같은 디자인 · 색만 전환 (메인 사이트 우측 상단 버튼)</span>
+      </div>
+      <div class="grid" id="themes"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-head">
+        <h2>② 디자인 6종 · 시안 5–10</h2>
+        <span class="tag">생김새가 통째로 다른 별도 시안</span>
+      </div>
+      <div class="grid" id="concepts"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-head">
+        <h2>③ 3D 시안 · 시안 11–12</h2>
+        <span class="tag">WebGL · 스크롤하며 3D 공간을 둘러보는 인터랙티브 시안 (로딩이 약간 무거움)</span>
+      </div>
+      <div class="grid" id="threed"></div>
+    </div>
+
+    <p class="note">
+      ※ 시안 5–10 은 Hero + 대표 섹션 3개를 담은 독립 HTML 목업입니다. 방향 확정 후 선택안을 풀 사이트로 정교화합니다.<br />
+      알려진 폴리시 항목 — 09 MANIFESTO: 히어로 하단 텍스트 약간 겹침 / 10 ATELIER: 히어로 등장 애니메이션 보정 필요(본문 챕터는 정상).
+    </p>
+
+    <script>
+      const themes = [
+        { n: '01', theme: 'ai-future', name: 'AI Future', en: 'Dark Neon · 현재 기본',
+          sw: ['#070B1E','#00E5FF','#7C5CFF','#EAF0FF'],
+          d: '우주 네온 다크 모드. 미래·AI 무드가 가장 강한 현재 기본값.' },
+        { n: '02', theme: 'heritage', name: 'Heritage', en: '부산대 정통 네이비',
+          sw: ['#F5F7FA','#0057B8','#00256B','#C8A04B'],
+          d: '밝은 네이비/로열블루. 기관다운 신뢰감과 격식.' },
+        { n: '03', theme: 'warm', name: 'Warm', en: '휴먼 이노베이션',
+          sw: ['#FFF8F0','#F4502C','#F59E00','#102A43'],
+          d: '따뜻한 코랄·앰버. 친근하고 사람 중심의 인상.' },
+        { n: '04', theme: 'teal', name: 'Industrial', en: 'ESG · 지속가능',
+          sw: ['#EAF7F4','#009E89','#4FAF3F','#07242B'],
+          d: '틸·라임. ESG·동남권 산업(조선·그린인프라) 무드.' },
+      ];
+      const concepts = [
+        { n: '05', file: '05-swiss-ink.html', name: '부산 INK', en: 'Swiss Editorial / Brutalist',
+          sw: ['#F4F1EA','#111111','#00256B','#E8482B'],
+          d: '페이퍼+잉크에 시그널 레드. 거대 글씨와 엄격한 그리드, 좌측 번호 인덱스. 잡지·신문 1면 느낌.',
+          meta: 'LIGHT · 잡지 표지 같은' },
+        { n: '06', file: '06-academic-journal.html', name: '학술원', en: 'Academic Journal / Almanac',
+          sw: ['#F6F0E2','#2B2118','#7A5C2E','#3A5A40'],
+          d: '크림 페이퍼 + 명조 세리프. 목차·2단·각주식 출처. 학술적 신뢰·전통.',
+          meta: 'WARM · 대학 학술지 같은' },
+        { n: '07', file: '07-phosphor-terminal.html', name: 'PHOSPHOR', en: 'Terminal / Console',
+          sw: ['#0A0C0A','#FFB000','#12150F','#8A9279'],
+          d: '니어블랙+앰버 인광. 콘솔·코드 화면. 광택 없는 첨단 "AI/데이터" 무드.',
+          meta: 'DARK · 해커 화면 같은' },
+        { n: '08', file: '08-campus-soft.html', name: 'CAMPUS', en: 'Soft Organic / Friendly',
+          sw: ['#FFFDF9','#B8E6D0','#FFD6BA','#D6C9F0'],
+          d: '파스텔 + 라운드 블롭 + 스티커. 친근·말랑, 학부생 지향.',
+          meta: 'LIGHT · 예쁜 앱 같은' },
+        { n: '09', file: '09-manifesto-block.html', name: 'MANIFESTO', en: 'Color-Block Poster',
+          sw: ['#1A36FF','#FF2E63','#C6FF00','#0A0A0A'],
+          d: '섹션마다 강렬한 풀블리드 컬러 블록. 초대형 글씨·멤피스 도형. 강렬·임팩트.',
+          meta: 'BOLD · 전시 포스터 같은' },
+        { n: '10', file: '10-atelier-minimal.html', name: 'ATELIER', en: 'Luxury Minimal',
+          sw: ['#EFEAE2','#B8995A','#14110D','#8C8C8C'],
+          d: '스톤+뮤트 골드, 우아한 세리프, 갤러리급 여백. 프리미엄·정적.',
+          meta: 'REFINED · 명품 화보 같은' },
+      ];
+      const threed = [
+        { n: '11', file: '11-campus-bridge.html', name: '캠퍼스 산업브릿지', en: '3D · Campus → Industry Bridge',
+          sw: ['#1a2b20','#2e7d52','#8fd9a8','#e9e4d6'],
+          d: '캠퍼스 → 연구동 → 동남권 산업으로 이어지는 "다리"를 3D 공간에서 스크롤하며 건너는 인터랙티브 시안.',
+          meta: 'WebGL · 3D 인터랙티브 투어' },
+        { n: '12', file: '12-3layer-bpf-3d.html', name: '3LAYER-BPF 3D', en: '3D · Three Layers',
+          sw: ['#0c1424','#2b6fe0','#8fb4ff','#eef2f8'],
+          d: '이론(B) → 실습(P) → 현장(F) 세 개의 "층"을 3D로 쌓아 올리며 위로 오르는 인터랙티브 시안.',
+          meta: 'WebGL · 3D 인터랙티브 스택' },
+      ];
+
+      document.getElementById('themes').innerHTML = themes.map(t => `
+        <a class="card card--theme" href="/site/?theme=${t.theme}">
+          <span class="pill">색만 다름</span>
+          <span class="num">${t.n} / 12</span>
+          <span class="name">${t.name}</span>
+          <span class="en">${t.en}</span>
+          <span class="swatches">${t.sw.map(s=>`<i style="background:${s}"></i>`).join('')}</span>
+          <span class="desc">${t.d}</span>
+          <span class="open">메인 사이트에서 이 색으로 열기 →</span>
+        </a>`).join('');
+
+      const cardHtml = (c) => `
+        <a class="card" href="/concepts/${c.file}">
+          <span class="num">${c.n} / 12</span>
+          <span class="name">${c.name}</span>
+          <span class="en">${c.en}</span>
+          <span class="swatches">${c.sw.map(s=>`<i style="background:${s}"></i>`).join('')}</span>
+          <span class="desc">${c.d}</span>
+          <span class="meta">${c.meta}</span>
+          <span class="open">전체 화면으로 열기 →</span>
+        </a>`;
+      document.getElementById('concepts').innerHTML = concepts.map(cardHtml).join('');
+      document.getElementById('threed').innerHTML = threed.map(cardHtml).join('');
+    </script>
+  </body>
+</html>

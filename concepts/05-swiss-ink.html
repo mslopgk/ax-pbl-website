@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>부산 INK — AX·PBL / 부산대학교</title>
+
+<!-- ── Fonts ─────────────────────────────────────────────────────────── -->
+<link href="vendor/fonts.css" rel="stylesheet" />
+<link rel="stylesheet" href="vendor/fonts.css" />
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+
+<style>
+  /* ════════════════════════════════════════════════════════════════════
+     부산 INK — Swiss Editorial / Brutalist
+     paper #F4F1EA · ink #111 · PNU navy #00256B · signal red #E8482B
+     ════════════════════════════════════════════════════════════════════ */
+  :root {
+    --paper: #f4f1ea;
+    --paper-2: #ece8dd;
+    --ink: #111111;
+    --ink-60: #5a574f;
+    --navy: #00256b;
+    --red: #e8482b;
+    --rule: rgba(17, 17, 17, 0.16);
+    --rule-strong: #111111;
+
+    --display: "Anton", "Pretendard", sans-serif;
+    --grotesk: "Archivo", "Pretendard", sans-serif;
+    --kr: "Pretendard", sans-serif;
+    --mono: "Space Mono", monospace;
+
+    --col: 12;
+    --gutter: clamp(12px, 1.6vw, 26px);
+    --nav-w: 180px;
+    --edge: clamp(18px, 4vw, 64px);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--kr);
+    line-height: 1.5;
+    overflow-x: hidden;
+    /* subtle paper grain */
+    background-image:
+      radial-gradient(rgba(17,17,17,0.022) 1px, transparent 1px);
+    background-size: 3px 3px;
+  }
+
+  ::selection { background: var(--red); color: var(--paper); }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ── Layout shell: sticky index nav + content column ───────────────── */
+  .shell {
+    display: grid;
+    grid-template-columns: var(--nav-w) 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Left sticky numbered index ────────────────────────────────────── */
+  .index {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    border-right: 1px solid var(--rule-strong);
+    padding: 26px 0 26px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--paper);
+    z-index: 30;
+  }
+  .index__brand {
+    font-family: var(--display);
+    font-size: 30px;
+    letter-spacing: 0.01em;
+    line-height: 0.9;
+  }
+  .index__brand small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    margin-top: 9px;
+    color: var(--ink-60);
+    text-transform: uppercase;
+  }
+  .index__nav { display: flex; flex-direction: column; gap: 2px; }
+  .index__link {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 7px 0;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: baseline;
+    color: var(--ink-60);
+    transition: color 0.18s, padding-left 0.18s;
+  }
+  .index__link:last-child { border-bottom: 1px solid var(--rule); }
+  .index__link b { color: var(--ink); font-weight: 700; }
+  .index__link .ko { font-family: var(--kr); font-size: 12.5px; }
+  .index__link:hover { color: var(--red); padding-left: 5px; }
+  .index__link.is-active { color: var(--ink); }
+  .index__link.is-active b { color: var(--red); }
+  .index__foot {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--ink-60);
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+
+  /* ── Content column ────────────────────────────────────────────────── */
+  .content { min-width: 0; }
+
+  /* 12-col grid w/ visible hairline rules */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--col), 1fr);
+    column-gap: var(--gutter);
+    padding-left: var(--edge);
+    padding-right: var(--edge);
+    position: relative;
+  }
+
+  /* vertical hairline overlay for sections that want the visible grid */
+  .ruled { position: relative; }
+  .ruled::before {
+    content: "";
+    position: absolute;
+    inset: 0 var(--edge);
+    background-image:
+      repeating-linear-gradient(to right,
+        transparent, transparent calc((100% + var(--gutter)) / var(--col) - var(--gutter) - 0.5px),
+        var(--rule) calc((100% + var(--gutter)) / var(--col) - var(--gutter) - 0.5px),
+        var(--rule) calc((100% + var(--gutter)) / var(--col) - var(--gutter) + 0.5px),
+        transparent calc((100% + var(--gutter)) / var(--col) - var(--gutter) + 0.5px),
+        transparent calc((100% + var(--gutter)) / var(--col)));
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+  }
+  .grid > * { position: relative; z-index: 1; }
+
+  /* section rhythm + top rule */
+  section { border-top: 1px solid var(--rule-strong); }
+  .pad-y { padding-top: clamp(46px, 7vw, 100px); padding-bottom: clamp(46px, 7vw, 100px); }
+
+  /* eyebrow / mono label */
+  .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-60);
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .label::before {
+    content: "";
+    width: 22px; height: 1px; background: var(--red);
+    display: inline-block;
+  }
+
+  .secno {
+    font-family: var(--display);
+    font-size: clamp(54px, 11vw, 150px);
+    line-height: 0.78;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .secno .of { color: var(--rule); }
+
+  /* ════════════════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════════════════ */
+  .hero { border-top: none; padding-top: clamp(20px, 3vw, 38px); }
+  .hero__top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 10px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: clamp(24px, 4vw, 50px);
+  }
+  .hero__top .meta { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; color: var(--ink-60); text-transform: uppercase; }
+
+  .hero__wordmark {
+    grid-column: 1 / -1;
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(82px, 25vw, 360px);
+    line-height: 0.8;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    position: relative;
+  }
+  .hero__wordmark .dot { color: var(--red); }
+  /* clip-reveal lines */
+  .clipline { display: block; overflow: hidden; }
+  .clipline > span { display: block; will-change: transform; }
+
+  .hero__sub { grid-column: 1 / -1; margin-top: clamp(20px, 3vw, 40px); display: grid; grid-template-columns: repeat(12,1fr); column-gap: var(--gutter); row-gap: 22px; }
+  .hero__kr {
+    grid-column: 1 / 7;
+    font-family: var(--kr);
+    font-weight: 800;
+    font-size: clamp(24px, 3.3vw, 44px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+  }
+  .hero__kr .red { color: var(--red); }
+  .hero__lead {
+    grid-column: 8 / 13;
+    align-self: end;
+    font-family: var(--kr);
+    font-size: clamp(14px, 1.15vw, 16px);
+    line-height: 1.62;
+    color: var(--ink);
+    text-align: justify;
+    border-top: 2px solid var(--ink);
+    padding-top: 14px;
+  }
+  .hero__lead .en { font-family: var(--mono); font-size: 11px; color: var(--ink-60); letter-spacing: 0.05em; display:block; margin-top:12px; text-align: left; }
+
+  .hero__cta { grid-column: 1 / -1; margin-top: clamp(24px, 3.5vw, 48px); display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 13px 22px; border: 1px solid var(--ink);
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: background 0.18s, color 0.18s, transform 0.18s;
+  }
+  .btn .ar { transition: transform 0.2s; }
+  .btn:hover { background: var(--ink); color: var(--paper); }
+  .btn:hover .ar { transform: translateX(4px); }
+  .btn--red { background: var(--red); border-color: var(--red); color: var(--paper); }
+  .btn--red:hover { background: var(--ink); border-color: var(--ink); }
+
+  /* marquee strip */
+  .strip {
+    border-top: 1px solid var(--rule-strong);
+    border-bottom: 1px solid var(--rule-strong);
+    overflow: hidden;
+    background: var(--navy);
+    color: var(--paper);
+  }
+  .strip__track { display: inline-flex; white-space: nowrap; animation: marquee 28s linear infinite; }
+  .strip__track span { font-family: var(--display); font-size: clamp(20px, 2.6vw, 34px); padding: 11px 0; letter-spacing: 0.02em; }
+  .strip__track .sep { color: var(--red); padding: 0 26px; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+
+  /* ════════════════════════════════════════════════════════════════════
+     SECTION 01 — 개념/역사 (editorial article)
+     ════════════════════════════════════════════════════════════════════ */
+  .sec-head { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12,1fr); column-gap: var(--gutter); align-items: end; margin-bottom: clamp(30px, 4vw, 56px); }
+  .sec-head .secno { grid-column: 1 / 4; }
+  .sec-head .h { grid-column: 5 / 13; }
+  .sec-head .h .label { margin-bottom: 14px; }
+  .sec-head .h h2 {
+    font-family: var(--kr); font-weight: 800;
+    font-size: clamp(22px, 2.7vw, 38px);
+    line-height: 1.2; letter-spacing: -0.02em;
+  }
+  .sec-head .h h2 .en { font-family: var(--grotesk); font-weight: 800; }
+
+  .lede {
+    grid-column: 1 / 8;
+    font-family: var(--kr);
+    font-size: clamp(17px, 1.7vw, 23px);
+    line-height: 1.5; letter-spacing: -0.01em;
+    font-weight: 500;
+    text-align: justify;
+  }
+  .lede .drop {
+    float: left; font-family: var(--display); font-size: 84px; line-height: 0.72;
+    color: var(--red); margin: 6px 14px 0 0;
+  }
+  .concept-aside {
+    grid-column: 9 / 13;
+    border-left: 1px solid var(--rule-strong);
+    padding-left: 18px;
+    font-family: var(--mono); font-size: 11.5px; line-height: 1.7; color: var(--ink-60);
+    align-self: start;
+  }
+  .concept-aside b { color: var(--navy); display:block; font-size: 12px; letter-spacing: 0.06em; margin-bottom:8px; }
+
+  /* timeline rows */
+  .timeline { grid-column: 1 / -1; margin-top: clamp(36px, 5vw, 70px); }
+  .tl-row {
+    display: grid; grid-template-columns: repeat(12,1fr); column-gap: var(--gutter);
+    padding: 26px 0; border-top: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .tl-row:last-child { border-bottom: 1px solid var(--rule); }
+  .tl-row .yr {
+    grid-column: 1 / 3;
+    font-family: var(--display); font-size: clamp(30px, 4vw, 56px); line-height: 0.85; color: var(--navy);
+  }
+  .tl-row .tag { grid-column: 3 / 6; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); align-self: center; }
+  .tl-row .tl-title { grid-column: 6 / 8; font-family: var(--kr); font-weight: 800; font-size: clamp(15px, 1.4vw, 19px); line-height: 1.25; }
+  .tl-row .tl-body { grid-column: 8 / 13; font-family: var(--kr); font-size: 13.5px; line-height: 1.62; color: var(--ink); text-align: justify; }
+
+  /* pillars */
+  .pillars { grid-column: 1 / -1; margin-top: clamp(30px, 4vw, 56px); display: grid; grid-template-columns: repeat(4, 1fr); column-gap: var(--gutter); border-top: 1px solid var(--rule-strong); }
+  .pillar { padding: 22px 16px 22px 0; border-right: 1px solid var(--rule); }
+  .pillar:last-child { border-right: none; }
+  .pillar .num { font-family: var(--mono); font-size: 11px; color: var(--ink-60); letter-spacing: 0.1em; }
+  .pillar .en { font-family: var(--grotesk); font-weight: 800; font-size: clamp(15px, 1.4vw, 19px); margin-top: 14px; line-height: 1.05; }
+  .pillar .ko { font-family: var(--kr); font-weight: 800; font-size: 14px; color: var(--navy); margin-top: 5px; }
+  .pillar p { font-family: var(--kr); font-size: 12.5px; line-height: 1.6; color: var(--ink-60); margin-top: 12px; }
+
+  /* ════════════════════════════════════════════════════════════════════
+     SECTION 02 — 7대 패키지 (numbered editorial list)
+     ════════════════════════════════════════════════════════════════════ */
+  .pk-intro { grid-column: 1 / -1; font-family: var(--kr); font-size: 14px; color: var(--ink-60); margin-bottom: 18px; }
+  .pk-list { grid-column: 1 / -1; border-top: 1px solid var(--rule-strong); }
+  .pk {
+    display: grid; grid-template-columns: repeat(12,1fr); column-gap: var(--gutter);
+    padding: 22px 0; border-bottom: 1px solid var(--rule);
+    align-items: baseline; cursor: default; transition: background 0.2s, padding-left 0.2s;
+  }
+  .pk:hover { background: var(--paper-2); padding-left: 10px; }
+  .pk .no { grid-column: 1 / 2; font-family: var(--display); font-size: clamp(26px, 3vw, 42px); color: var(--ink); line-height: 0.85; transition: color 0.2s; }
+  .pk:hover .no { color: var(--red); }
+  .pk .nm { grid-column: 2 / 6; }
+  .pk .nm .name { font-family: var(--kr); font-weight: 800; font-size: clamp(16px, 1.5vw, 21px); line-height: 1.2; letter-spacing: -0.01em; }
+  .pk .nm .en { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--navy); margin-top: 7px; display: block; }
+  .pk .bd { grid-column: 6 / 13; font-family: var(--kr); font-size: 13.5px; line-height: 1.6; color: var(--ink); text-align: justify; }
+
+  /* ════════════════════════════════════════════════════════════════════
+     SECTION 03 — 지표 (number-counter ledger)
+     ════════════════════════════════════════════════════════════════════ */
+  .sec--stats { background: var(--ink); color: var(--paper); }
+  .sec--stats .secno { color: var(--paper); }
+  .sec--stats .secno .of { color: rgba(244,241,234,0.2); }
+  .sec--stats .sec-head .h h2 { color: var(--paper); }
+  .sec--stats .label { color: rgba(244,241,234,0.6); }
+  .sec--stats .label::before { background: var(--red); }
+  .sec--stats .ruled::before { display: none; }
+
+  .stats-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid rgba(244,241,234,0.28); border-left: 1px solid rgba(244,241,234,0.28); }
+  .stat {
+    border-right: 1px solid rgba(244,241,234,0.28);
+    border-bottom: 1px solid rgba(244,241,234,0.28);
+    padding: 26px 22px 24px;
+    min-height: 190px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .stat .v {
+    font-family: var(--display); font-size: clamp(56px, 8vw, 104px); line-height: 0.82;
+    color: var(--paper); letter-spacing: -0.01em;
+  }
+  .stat .v .suf { font-size: 0.32em; color: var(--red); margin-left: 6px; vertical-align: baseline; font-family: var(--kr); font-weight: 800; }
+  .stat .lab { font-family: var(--kr); font-weight: 800; font-size: 15px; margin-top: 18px; }
+  .stat .note { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.04em; color: rgba(244,241,234,0.55); margin-top: 7px; line-height: 1.5; }
+  .stat-req {
+    grid-column: 1 / -1; margin-top: 26px; border: 1px solid var(--red);
+    padding: 18px 20px; font-family: var(--kr); font-size: 13.5px; line-height: 1.6;
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .stat-req .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; color: var(--red); white-space: nowrap; padding-top: 3px; }
+
+  /* ── footer badge / closer ─────────────────────────────────────────── */
+  .closer { grid-column: 1 / -1; padding-top: clamp(30px,4vw,52px); }
+  .closer h3 { font-family: var(--display); font-size: clamp(40px, 9vw, 120px); line-height: 0.82; letter-spacing: -0.01em; }
+  .closer h3 .red { color: var(--red); }
+  .closer .row { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-top: 26px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-60); }
+
+  /* ── fixed corner badge ───────────────────────────────────────────── */
+  .badge {
+    position: fixed; bottom: 16px; left: 16px; z-index: 60;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--paper); border: 1px solid var(--ink); color: var(--ink);
+    padding: 7px 11px; display: inline-flex; align-items: center; gap: 8px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .badge b { color: var(--red); }
+  .badge .sq { width: 7px; height: 7px; background: var(--navy); display: inline-block; }
+
+  /* ── reveal animation states ──────────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(22px); }
+  .reveal.in { opacity: 1; transform: none; transition: opacity 0.7s cubic-bezier(.2,.7,.2,1), transform 0.7s cubic-bezier(.2,.7,.2,1); }
+  .line-draw { transform-origin: left center; }
+
+  /* ── Responsive ───────────────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    :root { --nav-w: 0px; }
+    .shell { grid-template-columns: 1fr; }
+    .index {
+      position: sticky; top: 0; height: auto; flex-direction: row;
+      align-items: center; justify-content: space-between; padding: 12px var(--edge);
+      border-right: none; border-bottom: 1px solid var(--ink); gap: 14px;
+    }
+    .index__brand { font-size: 22px; }
+    .index__brand small { display: none; }
+    .index__foot { display: none; }
+    .index__nav { flex-direction: row; flex-wrap: wrap; gap: 0; justify-content: flex-end; }
+    .index__link { border: none !important; padding: 4px 0 4px 14px; grid-template-columns: auto; }
+    .index__link .ko { display: none; }
+    .index__link b { font-size: 11px; }
+    .index__link:hover { padding-left: 14px; }
+
+    .ruled::before { display: none; }
+
+    .sec-head .secno { grid-column: 1 / 5; }
+    .sec-head .h { grid-column: 1 / 13; margin-top: 16px; }
+
+    .lede { grid-column: 1 / 13; }
+    .concept-aside { grid-column: 1 / 13; margin-top: 26px; border-left: none; border-top: 1px solid var(--rule-strong); padding-left: 0; padding-top: 16px; }
+
+    .hero__kr, .hero__lead { grid-column: 1 / 13; }
+    .hero__lead { border-top: none; padding-top: 0; }
+
+    .tl-row .yr { grid-column: 1 / 4; }
+    .tl-row .tag { grid-column: 4 / 13; align-self: baseline; margin-top: 8px; }
+    .tl-row .tl-title { grid-column: 1 / 13; margin-top: 12px; }
+    .tl-row .tl-body { grid-column: 1 / 13; margin-top: 8px; }
+
+    .pillars { grid-template-columns: repeat(2,1fr); }
+    .pillar:nth-child(2) { border-right: none; }
+
+    .pk .no { grid-column: 1 / 3; }
+    .pk .nm { grid-column: 3 / 13; }
+    .pk .bd { grid-column: 1 / 13; margin-top: 12px; }
+    .pk:hover { padding-left: 0; }
+
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 540px) {
+    .pillars { grid-template-columns: 1fr; }
+    .pillar { border-right: none; }
+    .pillar:nth-child(2) { border-right: none; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat { min-height: 150px; }
+    .hero__top .meta:nth-child(2) { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+    .clipline > span { transform: none !important; }
+  }
+</style>
+
+<div class="shell">
+
+  <!-- ════════════════ LEFT STICKY INDEX ════════════════ -->
+  <aside class="index">
+    <div class="index__brand">
+      AX·PBL
+      <small>부산대학교 / PNU</small>
+    </div>
+
+    <nav class="index__nav" id="nav">
+      <a class="index__link" href="#concept"><b>01</b><span class="ko">개념 · 역사</span></a>
+      <a class="index__link" href="#packages"><b>02</b><span class="ko">7대 패키지</span></a>
+      <a class="index__link" href="#stats"><b>03</b><span class="ko">지표</span></a>
+    </nav>
+
+    <div class="index__foot">
+      Teaching Studio<br />
+      Arise PNU<br />
+      같이 더 높게
+    </div>
+  </aside>
+
+  <!-- ════════════════ CONTENT COLUMN ════════════════ -->
+  <main class="content">
+
+    <!-- ─────────── HERO ─────────── -->
+    <header class="hero pad-y grid ruled" style="border-top:none;">
+      <div class="hero__top" style="grid-column:1 / -1;">
+        <span class="meta">PNU AX-PBL Teaching Studio</span>
+        <span class="meta">Problem-Based Learning × AI Transformation</span>
+        <span class="meta">EST. 1969 · McMaster</span>
+      </div>
+
+      <h1 class="hero__wordmark" aria-label="AX·PBL">
+        <span class="clipline"><span>AX<span class="dot">·</span>PBL</span></span>
+      </h1>
+
+      <div class="hero__sub">
+        <p class="hero__kr">
+          문제로 배우고,<br />
+          <span class="red">AI와 함께</span> 해결하는<br />
+          실천적 교육.
+        </p>
+        <p class="hero__lead">
+          부산대학교 AX-PBL은 학부생의 진학 의지와 AX 역량을 동남권 산업 수요와 연결하는 교육·연구개발·산학협력의 복합체입니다.
+          <span class="en">Beyond acquiring knowledge — defining &amp; solving real problems together with AI.</span>
+        </p>
+      </div>
+
+      <div class="hero__cta">
+        <a class="btn btn--red" href="#concept">AX-PBL 알아보기 <span class="ar">→</span></a>
+        <a class="btn" href="#packages">교과목 카탈로그 <span class="ar">→</span></a>
+      </div>
+    </header>
+
+    <!-- marquee strip -->
+    <div class="strip" aria-hidden="true">
+      <div class="strip__track">
+        <span>3LAYER-BPF<span class="sep">/</span>PROBLEM BANK<span class="sep">/</span>AI CO-DESIGN STUDIO<span class="sep">/</span>IMPACT PORTFOLIO<span class="sep">/</span></span>
+        <span>3LAYER-BPF<span class="sep">/</span>PROBLEM BANK<span class="sep">/</span>AI CO-DESIGN STUDIO<span class="sep">/</span>IMPACT PORTFOLIO<span class="sep">/</span></span>
+      </div>
+    </div>
+
+    <!-- ─────────── 01 · 개념 / 역사 ─────────── -->
+    <section id="concept" class="pad-y grid ruled">
+      <div class="sec-head">
+        <div class="secno">01<span class="of">/03</span></div>
+        <div class="h">
+          <span class="label">What is PBL</span>
+          <h2>PBL은 트렌드가 아니라,<br />반세기 검증된 <span class="en">교수학습 모델</span>입니다.</h2>
+        </div>
+      </div>
+
+      <p class="lede reveal">
+        <span class="drop">P</span>BL(Problem-Based Learning)은 일시적인 교육 트렌드가 아닌, 반세기 동안 고등교육의 효과성을 입증해 온 정통성 있는 교수학습 모델입니다. AX-PBL은 여기에 AI를 더해 문제를 정의하고 해결하는 현대적 확장입니다.
+      </p>
+      <aside class="concept-aside reveal">
+        <b>비구조화 문제 / Ill-structured</b>
+        정답이 정해져 있지 않은 현실의 복잡한 문제를 중심으로, 학습자가 주도적으로 협력·사유하며 해결책을 도출하는 역량 중심 학습(Competency-Based Learning)의 핵심.
+      </aside>
+
+      <!-- timeline -->
+      <div class="timeline">
+        <div class="tl-row">
+          <div class="yr">1969</div>
+          <div class="tag">McMaster 의과대학</div>
+          <div class="tl-title">혁신의 출발</div>
+          <div class="tl-body">하워드 배로우(Howard Barrows) 교수가 주입식 의학 교육의 한계 — ‘파편화된 지식’을 극복하기 위해 PBL을 최초로 도입했습니다.</div>
+        </div>
+        <div class="tl-row">
+          <div class="yr">문제</div>
+          <div class="tag">지식의 파편화</div>
+          <div class="tl-title">암기는 했지만 진단하지 못했다</div>
+          <div class="tl-body">당시 의대생들은 엄청난 양의 의학 지식을 외웠지만, 정작 병원 현장에서 환자를 마주했을 때 병명을 진단하지 못하는 심각한 ‘지식의 파편화’를 겪었습니다.</div>
+        </div>
+        <div class="tl-row">
+          <div class="yr">해결</div>
+          <div class="tag">Ill-structured Problem</div>
+          <div class="tl-title">문제를 먼저 던지다</div>
+          <div class="tl-body">배로우 교수는 주입식 강의를 버리고, 실제 환자의 증상 시나리오를 먼저 던진 뒤 학생이 스스로 진단하고 치료법을 찾게 했습니다. 결과는 대성공, 전 세계로 확산되었습니다.</div>
+        </div>
+        <div class="tl-row">
+          <div class="yr">Now</div>
+          <div class="tag">Competency-Based</div>
+          <div class="tl-title">역량 중심 학습의 핵심</div>
+          <div class="tl-body">단일한 정답이 없는 복잡한 현실 세계의 문제를 중심으로, 학습자가 주도적으로 협력·사유하며 해결책을 도출하는 역량 중심 학습의 핵심입니다.</div>
+        </div>
+      </div>
+
+      <!-- 4 pillars -->
+      <div class="pillars">
+        <div class="pillar reveal">
+          <div class="num">→ 01</div>
+          <div class="en">Self-directed</div>
+          <div class="ko">자기주도적 학습</div>
+          <p>교수가 지식을 주입하는 것이 아니라, 학생이 스스로 필요한 지식을 찾아 나섭니다.</p>
+        </div>
+        <div class="pillar reveal">
+          <div class="num">→ 02</div>
+          <div class="en">Collaborative</div>
+          <div class="ko">협동 학습</div>
+          <p>팀원들과 소통·토론하며 집단지성으로 문제를 해결합니다.</p>
+        </div>
+        <div class="pillar reveal">
+          <div class="num">→ 03</div>
+          <div class="en">Ill-structured</div>
+          <div class="ko">비구조화 문제</div>
+          <p>정답이 정해져 있지 않고 현실에 존재할 법한 복잡한 문제를 해결하며 지식을 습득합니다.</p>
+        </div>
+        <div class="pillar reveal">
+          <div class="num">→ 04</div>
+          <div class="en">Facilitator</div>
+          <div class="ko">퍼실리테이터</div>
+          <p>교수는 ‘지식 전달자’가 아닌, 올바른 방향으로 길을 열어주는 ‘조력자·안내자’입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────── 02 · 7대 패키지 ─────────── -->
+    <section id="packages" class="pad-y grid ruled">
+      <div class="sec-head">
+        <div class="secno">02<span class="of">/03</span></div>
+        <div class="h">
+          <span class="label">Teaching Studio</span>
+          <h2>AX-PBL 콘텐츠 <span class="en">7</span>대 패키지</h2>
+        </div>
+      </div>
+
+      <p class="pk-intro">PNU AX-PBL Teaching Studio 플랫폼이 제공하는 핵심 구성요소.</p>
+
+      <div class="pk-list">
+        <div class="pk">
+          <div class="no">01</div>
+          <div class="nm"><div class="name">3LAYER-BPF 콘텐츠</div><span class="en">Basic → Practical → Field</span></div>
+          <div class="bd">기본 이론(Basic Theory) → 실무 역량(Practical Skill) → 현장 훈련(Field Training)의 3단계 구조.</div>
+        </div>
+        <div class="pk">
+          <div class="no">02</div>
+          <div class="nm"><div class="name">문제해결형 AX-PBL</div><span class="en">Problem-Solving Model</span></div>
+          <div class="bd">학생이 문제를 직접 발견하고, AI와 함께 확장적으로 분석한 뒤, 실행 가능한 해결안을 설계·검증하는 수업 모델. 더 넓게 보고, 깊게 정의하고, 다양하게 만들고, 엄격하게 검증합니다.</div>
+        </div>
+        <div class="pk">
+          <div class="no">03</div>
+          <div class="nm"><div class="name">산업·지역 Problem Bank</div><span class="en">Problem Bank</span></div>
+          <div class="bd">기업·공공기관·지역사회·학내 부서가 문제를 등록하는 문제은행. 부산대 수업과 산업·지역 현장을 연결하는 문제 매칭 시스템입니다.</div>
+        </div>
+        <div class="pk">
+          <div class="no">04</div>
+          <div class="nm"><div class="name">AI Co-Design Studio</div><span class="en">AI Co-Design Studio</span></div>
+          <div class="bd">AI를 검색 도구가 아니라 수업설계와 문제해결의 공동 설계자로 활용. 학생은 AI에 분석가·비판자·정책자문가·사용자 대변인 역할을 부여해 사고를 확장합니다.</div>
+        </div>
+        <div class="pk">
+          <div class="no">05</div>
+          <div class="nm"><div class="name">AX Impact Portfolio</div><span class="en">AX Impact Portfolio</span></div>
+          <div class="bd">학생 산출물을 역량 증빙자료, 취업·진로 포트폴리오, 우수사례, 성과보고 자료로 자동 축적합니다.</div>
+        </div>
+        <div class="pk">
+          <div class="no">06</div>
+          <div class="nm"><div class="name">표준 강의계획 템플릿</div><span class="en">Course Design Template</span></div>
+          <div class="bd">전공별 학습 목표와 생성형 AI 프롬프트 템플릿을 연계해, 클릭 몇 번으로 표준 강의계획서를 수립할 수 있는 교수 지원 도구.</div>
+        </div>
+        <div class="pk">
+          <div class="no">07</div>
+          <div class="nm"><div class="name">역량 인증 &amp; 시각화</div><span class="en">Competency Certification</span></div>
+          <div class="bd">AI 협업 문제해결 과정을 추적하여 검증된 역량 인증서 형태로 자동 시각화·축적하는 인증 체계.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────── 03 · 지표 ─────────── -->
+    <section id="stats" class="sec--stats pad-y grid ruled">
+      <div class="sec-head">
+        <div class="secno">03<span class="of">/03</span></div>
+        <div class="h">
+          <span class="label">By the Numbers</span>
+          <h2>2025 교육과정 <span class="en">PBL</span> 추출 성과</h2>
+        </div>
+      </div>
+
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat"><div class="v" data-count="21" data-suf="건">0<span class="suf">건</span></div><div><div class="lab">PBL 명시 항목</div><div class="note">교과목 20 · 전공 운영목표 1</div></div></div>
+        <div class="stat"><div class="v" data-count="20" data-suf="개">0<span class="suf">개</span></div><div><div class="lab">PBL 명시 교과목</div><div class="note">경영·의과·융합전공 전반</div></div></div>
+        <div class="stat"><div class="v" data-count="4" data-suf="기">0<span class="suf">기</span></div><div><div class="lab">AX-PBL 운영 기수</div><div class="note">1기 ~ 4기 진행</div></div></div>
+        <div class="stat"><div class="v" data-count="5" data-suf="개">0<span class="suf">개</span></div><div><div class="lab">Problem Bank 분류</div><div class="note">산업·지역·공공·문화·ESG</div></div></div>
+        <div class="stat"><div class="v" data-count="983" data-suf="쪽">0<span class="suf">쪽</span></div><div><div class="lab">분석 교육과정 분량</div><div class="note">2025 교육과정 PDF 전체</div></div></div>
+        <div class="stat"><div class="v" data-count="3" data-suf="건">0<span class="suf">건</span></div><div><div class="lab">전공 운영목표 PBL</div><div class="note">물류·항만물류·데이터사이언스</div></div></div>
+      </div>
+
+      <div class="stat-req">
+        <span class="k">REQUIREMENT</span>
+        <span>복수전공 36학점 · 부전공 21학점 · 마이크로디그리 12학점 과정에 <b>PBL 3학점 이상</b> 포함 (스마트국제물류융합전공 등).</span>
+      </div>
+    </section>
+
+    <!-- ─────────── CLOSER ─────────── -->
+    <section class="pad-y grid ruled" style="padding-bottom:clamp(60px,8vw,120px);">
+      <div class="closer">
+        <h3>같이 더 높게,<br /><span class="red">ARISE</span> PNU.</h3>
+        <div class="row">
+          <span>부산대학교 / Pusan National University</span>
+          <span>AX PBL · URP</span>
+          <span>※ 연락처/링크는 placeholder</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- fixed corner badge -->
+<div class="badge"><span class="sq"></span> <span><b>05</b> · 부산 INK</span></div>
+
+<script>
+  (function () {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /* ── HERO clip-reveal + entrance ─────────────────────────── */
+    if (window.gsap && !reduce) {
+      gsap.registerPlugin(ScrollTrigger);
+
+      const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+      tl.from(".hero__wordmark .clipline > span", { yPercent: 110, duration: 1.05 })
+        .from(".hero__top", { opacity: 0, duration: 0.5 }, 0.1)
+        .from(".hero__kr", { y: 26, opacity: 0, duration: 0.7 }, "-=0.6")
+        .from(".hero__lead", { y: 26, opacity: 0, duration: 0.7 }, "-=0.55")
+        .from(".hero__cta .btn", { y: 18, opacity: 0, duration: 0.5, stagger: 0.08 }, "-=0.45");
+
+      /* timeline rows: line-draw + slide */
+      gsap.utils.toArray(".tl-row").forEach((row) => {
+        gsap.from(row, {
+          scrollTrigger: { trigger: row, start: "top 88%" },
+          x: -24, opacity: 0, duration: 0.7, ease: "power3.out",
+        });
+      });
+
+      /* package rows stagger */
+      gsap.from(".pk", {
+        scrollTrigger: { trigger: ".pk-list", start: "top 82%" },
+        y: 20, opacity: 0, duration: 0.55, stagger: 0.07, ease: "power2.out",
+      });
+    }
+
+    /* ── generic reveal via IntersectionObserver ─────────────── */
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      },
+      { threshold: 0.18 }
+    );
+    document.querySelectorAll(".reveal").forEach((el) => {
+      if (reduce) { el.classList.add("in"); } else { io.observe(el); }
+    });
+
+    /* ── number counters ─────────────────────────────────────── */
+    function runCount(el) {
+      const target = parseInt(el.dataset.count, 10);
+      const suf = el.dataset.suf || "";
+      if (reduce) { el.innerHTML = target + '<span class="suf">' + suf + "</span>"; return; }
+      const dur = 1100, start = performance.now();
+      function frame(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = Math.round(eased * target);
+        el.innerHTML = val + '<span class="suf">' + suf + "</span>";
+        if (p < 1) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    }
+    const grid = document.getElementById("statsGrid");
+    if (grid) {
+      const sio = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              grid.querySelectorAll(".v").forEach((v) => runCount(v));
+              sio.disconnect();
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+      sio.observe(grid);
+    }
+
+    /* ── scroll-spy active index link ────────────────────────── */
+    const links = Array.from(document.querySelectorAll(".index__link"));
+    const map = {};
+    links.forEach((l) => { map[l.getAttribute("href").slice(1)] = l; });
+    const spy = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            links.forEach((l) => l.classList.remove("is-active"));
+            const lk = map[e.target.id];
+            if (lk) lk.classList.add("is-active");
+          }
+        });
+      },
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    ["concept", "packages", "stats"].forEach((id) => {
+      const s = document.getElementById(id);
+      if (s) spy.observe(s);
+    });
+
+    /* smooth scroll for index links */
+    links.forEach((l) => {
+      l.addEventListener("click", (ev) => {
+        const id = l.getAttribute("href").slice(1);
+        const t = document.getElementById(id);
+        if (t) { ev.preventDefault(); t.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); }
+      });
+    });
+  })();
+</script>
+</html>

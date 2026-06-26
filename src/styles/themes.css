@@ -1,0 +1,167 @@
+/* ════════════════════════════════════════════════════════════════════════
+   THEME TOKENS — 4 palettes, switchable at runtime via [data-theme] on <html>
+   Default: ai-future (dark neon). All themes share the same semantic token API.
+   ════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* type (global, not themed) */
+  --font-display: 'Clash Display', 'Pretendard Variable', 'Pretendard', sans-serif;
+  --font-body: 'Pretendard Variable', 'Pretendard', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Pretendard Variable', monospace;
+
+  /* radius */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 36px;
+  --r-pill: 999px;
+
+  /* layout */
+  --container: 1280px;
+  --gutter: clamp(20px, 5vw, 64px);
+  --section-pad: clamp(88px, 12vw, 184px);
+
+  /* motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0.05, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* theme-switch crossfade */
+  --theme-transition: 620ms;
+}
+
+/* ── AI FUTURE — dark neon (DEFAULT) ─────────────────────────────────────── */
+[data-theme='ai-future'] {
+  color-scheme: dark;
+  --bg: #070b1e;
+  --bg-deep: #04081a;
+  --bg-elev: #0c1230;
+  --surface: rgba(255, 255, 255, 0.035);
+  --surface-2: rgba(124, 140, 255, 0.07);
+  --surface-solid: #101740;
+  --border: rgba(140, 158, 255, 0.16);
+  --border-strong: rgba(0, 229, 255, 0.42);
+  --text: #eaf0ff;
+  --text-dim: #aab6e0;
+  --text-mute: #6e7aae;
+  --accent: #00e5ff;
+  --accent-2: #7c5cff;
+  --accent-3: #ff4d9d;
+  --accent-contrast: #04122b;
+  --accent-ink: var(--accent);
+  --glow: 0, 229, 255;
+  --glow-2: 124, 92, 255;
+  --glow-3: 255, 77, 157;
+  --grid-line: rgba(140, 158, 255, 0.08);
+  --halo-strength: 1;
+  --noise-opacity: 0.05;
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 18px 50px -24px rgba(0, 0, 0, 0.8);
+  --shadow-card: 0 0 0 1px rgba(140, 158, 255, 0.1), 0 30px 80px -40px rgba(0, 0, 0, 0.9);
+  --hero-grad: radial-gradient(120% 120% at 15% 0%, rgba(124, 92, 255, 0.25), transparent 45%),
+    radial-gradient(100% 100% at 95% 20%, rgba(0, 229, 255, 0.22), transparent 50%);
+}
+
+/* ── HERITAGE NAVY — PNU 정통, light ──────────────────────────────────────── */
+[data-theme='heritage'] {
+  color-scheme: light;
+  --bg: #f5f7fa;
+  --bg-deep: #e9eef6;
+  --bg-elev: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #eef2f8;
+  --surface-solid: #ffffff;
+  --border: rgba(0, 37, 107, 0.14);
+  --border-strong: rgba(0, 87, 184, 0.5);
+  --text: #14213d;
+  --text-dim: #3d4a6b;
+  --text-mute: #565e7a;
+  --accent: #0057b8;
+  --accent-2: #00256b;
+  --accent-3: #c8a04b;
+  --accent-contrast: #ffffff;
+  --accent-ink: #0057b8;
+  --glow: 0, 87, 184;
+  --glow-2: 0, 37, 107;
+  --glow-3: 200, 160, 75;
+  --grid-line: rgba(0, 37, 107, 0.06);
+  --halo-strength: 0.4;
+  --noise-opacity: 0.025;
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 12px 30px -18px rgba(0, 37, 107, 0.35);
+  --shadow-card: 0 0 0 1px rgba(0, 37, 107, 0.06), 0 26px 60px -36px rgba(0, 37, 107, 0.45);
+  --hero-grad: radial-gradient(120% 120% at 12% 0%, rgba(0, 87, 184, 0.16), transparent 46%),
+    radial-gradient(100% 100% at 96% 16%, rgba(200, 160, 75, 0.16), transparent 52%);
+}
+
+/* ── WARM INNOVATION — coral/amber, light (fully realized) ────────────────── */
+[data-theme='warm'] {
+  color-scheme: light;
+  --bg: #fff8f0;
+  --bg-deep: #ffeede;
+  --bg-elev: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #fff1e4;
+  --surface-solid: #ffffff;
+  --border: rgba(16, 42, 67, 0.13);
+  --border-strong: rgba(255, 107, 74, 0.55);
+  --text: #14202e;
+  --text-dim: #475360;
+  --text-mute: #5b6470;
+  --accent: #f4502c;
+  --accent-2: #102a43;
+  --accent-3: #f59e00;
+  --accent-contrast: #ffffff;
+  --accent-ink: #bd3a1b;
+  --glow: 244, 80, 44;
+  --glow-2: 16, 42, 67;
+  --glow-3: 245, 158, 0;
+  --grid-line: rgba(16, 42, 67, 0.06);
+  --halo-strength: 0.45;
+  --noise-opacity: 0.03;
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 12px 30px -18px rgba(244, 80, 44, 0.28);
+  --shadow-card: 0 0 0 1px rgba(16, 42, 67, 0.06), 0 26px 60px -36px rgba(244, 80, 44, 0.32);
+  --hero-grad: radial-gradient(120% 120% at 12% 0%, rgba(244, 80, 44, 0.16), transparent 46%),
+    radial-gradient(100% 100% at 96% 16%, rgba(245, 158, 0, 0.2), transparent 52%);
+}
+
+/* ── INDUSTRIAL TEAL — ESG, light ─────────────────────────────────────────── */
+[data-theme='teal'] {
+  color-scheme: light;
+  --bg: #eaf7f4;
+  --bg-deep: #d8efe9;
+  --bg-elev: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #dcf0eb;
+  --surface-solid: #ffffff;
+  --border: rgba(7, 36, 43, 0.13);
+  --border-strong: rgba(0, 168, 145, 0.55);
+  --text: #07242b;
+  --text-dim: #355158;
+  --text-mute: #4f6168;
+  --accent: #009e89;
+  --accent-2: #0e6e5e;
+  --accent-3: #4faf3f;
+  --accent-contrast: #ffffff;
+  --accent-ink: #00705e;
+  --glow: 0, 158, 137;
+  --glow-2: 14, 110, 94;
+  --glow-3: 79, 175, 63;
+  --grid-line: rgba(7, 36, 43, 0.06);
+  --halo-strength: 0.45;
+  --noise-opacity: 0.03;
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.85) inset, 0 12px 30px -18px rgba(0, 158, 137, 0.28);
+  --shadow-card: 0 0 0 1px rgba(7, 36, 43, 0.06), 0 26px 60px -36px rgba(0, 110, 94, 0.34);
+  --hero-grad: radial-gradient(120% 120% at 12% 0%, rgba(0, 158, 137, 0.18), transparent 46%),
+    radial-gradient(100% 100% at 96% 16%, rgba(79, 175, 63, 0.18), transparent 52%);
+}
+
+/* smooth palette crossfade on switch */
+html.theme-anim,
+html.theme-anim body,
+html.theme-anim *:not(canvas) {
+  transition: background-color var(--theme-transition) var(--ease-out),
+    border-color var(--theme-transition) var(--ease-out),
+    color var(--theme-transition) var(--ease-out),
+    fill var(--theme-transition) var(--ease-out),
+    box-shadow var(--theme-transition) var(--ease-out);
+}

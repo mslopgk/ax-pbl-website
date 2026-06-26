@@ -1,0 +1,98 @@
+.theme-switch {
+  position: relative;
+}
+.theme-switch__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.3s, transform 0.3s var(--ease-out);
+}
+.theme-switch__toggle:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+.theme-switch__dots {
+  display: inline-flex;
+}
+.theme-switch__dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: block;
+  box-shadow: 0 0 0 1.5px var(--bg);
+}
+.theme-switch__dots i:not(:first-child) {
+  margin-left: -4px;
+}
+.theme-switch__name {
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+}
+
+.theme-switch__panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 248px;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-card);
+  z-index: 200;
+  transform-origin: top right;
+}
+.theme-switch__hint {
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  padding: 0.35rem 0.55rem 0.45rem;
+}
+.theme-switch__opt {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.55rem;
+  border-radius: var(--r-sm);
+  text-align: left;
+  transition: background-color 0.25s;
+}
+.theme-switch__opt:hover {
+  background: var(--surface-2);
+}
+.theme-switch__opt.is-active {
+  background: var(--surface-2);
+}
+.theme-switch__opt .theme-switch__dots i {
+  width: 14px;
+  height: 14px;
+  box-shadow: 0 0 0 1.5px var(--bg-elev);
+}
+.theme-switch__meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  flex: 1;
+}
+.theme-switch__opt-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 0.92rem;
+}
+.theme-switch__opt-desc {
+  font-size: 0.74rem;
+  color: var(--text-mute);
+}
+.theme-switch__check {
+  color: var(--accent-ink);
+  font-size: 0.7rem;
+}

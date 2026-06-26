@@ -1,0 +1,378 @@
+/* ════════════════════════════════════════════════════════════════════════
+   ConceptHistory — PBL 역사 story timeline + 4 foundations.
+   Spine draws on scrub-scroll, nodes activate sequentially, cards slide in.
+   All colors via theme tokens / rgba(var(--glow*), a) only.
+   ════════════════════════════════════════════════════════════════════════ */
+
+.cncpt {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.cncpt-inner {
+  position: relative;
+  z-index: 2;
+}
+
+.cncpt-halo {
+  z-index: 0;
+}
+.cncpt-halo--1 {
+  width: 520px;
+  height: 520px;
+  background: rgba(var(--glow), 0.4);
+  top: 4%;
+  right: -160px;
+}
+.cncpt-halo--2 {
+  width: 460px;
+  height: 460px;
+  background: rgba(var(--glow-2), 0.34);
+  bottom: 6%;
+  left: -180px;
+}
+
+/* ── TIMELINE ──────────────────────────────────────────────────────────── */
+.cncpt-timeline {
+  position: relative;
+  margin-top: clamp(3rem, 6vw, 5.5rem);
+  padding-block: clamp(1rem, 3vw, 2.5rem);
+}
+
+/* central rail housing the drawable spine */
+.cncpt-rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+.cncpt-rail-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.cncpt-spine-bg,
+.cncpt-spine {
+  stroke-width: 2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  fill: none;
+}
+.cncpt-spine-bg {
+  stroke: var(--border);
+}
+.cncpt-spine {
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 6px rgba(var(--glow), calc(0.7 * var(--halo-strength))));
+}
+
+/* glowing pulse riding down the spine while it draws */
+.cncpt-traveller {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 18px 4px rgba(var(--glow), calc(0.85 * var(--halo-strength))),
+    0 0 6px 1px rgba(var(--glow), 0.9);
+  pointer-events: none;
+}
+
+/* ── ENTRY ─────────────────────────────────────────────────────────────── */
+.cncpt-entry {
+  position: relative;
+  display: grid;
+  /* two columns; card lands in one side, gap in the other */
+  grid-template-columns: 1fr 1fr;
+  column-gap: clamp(2.5rem, 7vw, 7rem);
+  align-items: start;
+  margin-block: clamp(2.4rem, 5vw, 4.5rem);
+}
+.cncpt-entry:first-of-type {
+  margin-top: 0;
+}
+.cncpt-entry:last-of-type {
+  margin-bottom: 0;
+}
+
+.cncpt-entry--left .cncpt-card {
+  grid-column: 1;
+  text-align: right;
+  align-items: flex-end;
+}
+.cncpt-entry--right .cncpt-card {
+  grid-column: 2;
+  text-align: left;
+  align-items: flex-start;
+}
+
+/* node dot anchored on the central spine */
+.cncpt-node {
+  position: absolute;
+  top: 1.4rem;
+  left: 50%;
+  width: 38px;
+  height: 38px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  z-index: 2;
+}
+.cncpt-node-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-solid);
+  transition: border-color 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+}
+.cncpt-node-core {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-mute);
+  transition: background-color 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out),
+    transform 0.5s var(--ease-spring);
+}
+.cncpt-entry.is-active .cncpt-node-ring {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(var(--glow), calc(0.14 * var(--halo-strength)));
+}
+.cncpt-entry.is-active .cncpt-node-core {
+  background: var(--accent);
+  transform: scale(1.15);
+  box-shadow: 0 0 14px 2px rgba(var(--glow), calc(0.9 * var(--halo-strength)));
+  animation: cncptPulse 2.6s var(--ease-in-out) infinite;
+}
+@keyframes cncptPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 14px 2px rgba(var(--glow), calc(0.85 * var(--halo-strength)));
+  }
+  50% {
+    box-shadow: 0 0 22px 6px rgba(var(--glow), calc(0.95 * var(--halo-strength)));
+  }
+}
+
+/* ── CARD ──────────────────────────────────────────────────────────────── */
+.cncpt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: clamp(1.4rem, 2.6vw, 2.1rem);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.cncpt-card-glint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--glow), 0.1),
+    transparent 38%,
+    transparent 62%,
+    rgba(var(--glow-2), 0.08)
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out);
+}
+.cncpt-entry.is-active .cncpt-card-glint {
+  opacity: 1;
+}
+
+.cncpt-year {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.2rem, 4.6vw, 3.6rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  background: linear-gradient(120deg, var(--accent), var(--accent-2) 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.cncpt-chip {
+  align-self: auto;
+}
+.cncpt-entry--left .cncpt-chip {
+  align-self: flex-end;
+}
+.cncpt-title {
+  color: var(--text);
+}
+.cncpt-body {
+  font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+  line-height: 1.65;
+  max-width: 42ch;
+}
+.cncpt-index {
+  position: absolute;
+  top: clamp(1rem, 2vw, 1.6rem);
+  font-size: 0.72rem;
+  color: var(--text-mute);
+  letter-spacing: 0.12em;
+}
+.cncpt-entry--left .cncpt-index {
+  left: clamp(1rem, 2vw, 1.6rem);
+}
+.cncpt-entry--right .cncpt-index {
+  right: clamp(1rem, 2vw, 1.6rem);
+}
+
+/* ── 4 FOUNDATIONS ─────────────────────────────────────────────────────── */
+.cncpt-pillars-wrap {
+  margin-top: clamp(4.5rem, 9vw, 8rem);
+}
+.cncpt-pillars-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 640px;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+.cncpt-pillars-lead {
+  color: var(--text);
+}
+
+.cncpt-pillars {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1rem, 1.6vw, 1.4rem);
+}
+
+.cncpt-pillar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: clamp(1.4rem, 2.2vw, 1.9rem);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out),
+    border-color 0.45s var(--ease-out);
+  will-change: transform;
+}
+/* animated accent border-draw on hover */
+.cncpt-pillar-border {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  /* mask trick to render border-only gradient (mask uses alpha only; color is token-sourced & fully opaque) */
+  -webkit-mask: linear-gradient(rgba(var(--glow), 1) 0 0) content-box,
+    linear-gradient(rgba(var(--glow), 1) 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(rgba(var(--glow), 1) 0 0) content-box,
+    linear-gradient(rgba(var(--glow), 1) 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity 0.45s var(--ease-out), transform 0.45s var(--ease-out);
+  pointer-events: none;
+}
+.cncpt-pillar:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 0 1px var(--border-strong),
+    0 30px 60px -34px rgba(var(--glow), calc(0.6 * var(--halo-strength))),
+    var(--shadow-card);
+}
+.cncpt-pillar:hover .cncpt-pillar-border {
+  opacity: 1;
+  transform: scale(1);
+}
+.cncpt-pillar-num {
+  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+.cncpt-pillar-ko {
+  font-size: clamp(1.2rem, 1.7vw, 1.5rem);
+  color: var(--text);
+}
+.cncpt-pillar-en {
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  color: var(--text-mute);
+  text-transform: uppercase;
+}
+.cncpt-pillar-body {
+  font-size: clamp(0.9rem, 1.1vw, 0.98rem);
+  line-height: 1.6;
+  margin-top: 0.2rem;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1080px) {
+  .cncpt-pillars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* MOBILE: spine moves to the left, entries stack in a single column */
+@media (max-width: 860px) {
+  .cncpt-rail {
+    left: 18px;
+    transform: none;
+  }
+  .cncpt-traveller {
+    left: 18px;
+  }
+  .cncpt-entry {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    padding-left: 52px;
+  }
+  .cncpt-entry--left .cncpt-card,
+  .cncpt-entry--right .cncpt-card {
+    grid-column: 1;
+    text-align: left;
+    align-items: flex-start;
+  }
+  .cncpt-entry--left .cncpt-chip,
+  .cncpt-entry--right .cncpt-chip {
+    align-self: flex-start;
+  }
+  .cncpt-node {
+    left: 18px;
+    top: 1.6rem;
+  }
+  .cncpt-entry--left .cncpt-index,
+  .cncpt-entry--right .cncpt-index {
+    left: auto;
+    right: clamp(1rem, 4vw, 1.4rem);
+  }
+}
+
+@media (max-width: 560px) {
+  .cncpt-pillars {
+    grid-template-columns: 1fr;
+  }
+  .cncpt-card {
+    padding: 1.3rem;
+  }
+}
+
+/* reduced-motion: everything visible, no pulse, spine full */
+@media (prefers-reduced-motion: reduce) {
+  .cncpt-entry.is-active .cncpt-node-core {
+    animation: none;
+  }
+  .cncpt-traveller {
+    display: none;
+  }
+}

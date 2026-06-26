@@ -1,0 +1,422 @@
+/* ════════════════════════════════════════════════════════════════════════
+   CASES PAGE — /cases · 3LAYER-BPF AX-PBL 운영 사례
+   A scroll-driven cohort timeline. Status color logic (token-only):
+     done    = --accent       (개설완료)
+     planned = --accent-3     (26년 2학기 개설예정)
+     active  = --accent-2     (연구 진행중)
+   All custom classes are prefixed `cases-` / `casepage-` to avoid collisions.
+   ════════════════════════════════════════════════════════════════════════ */
+
+.casepage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-top: clamp(120px, 16vh, 200px);
+  padding-bottom: clamp(64px, 10vw, 140px);
+}
+
+.casepage .grid-overlay {
+  height: 80vh;
+}
+
+.casepage__halo {
+  z-index: 0;
+}
+.casepage__halo--1 {
+  width: clamp(360px, 46vw, 640px);
+  height: clamp(360px, 46vw, 640px);
+  background: rgba(var(--glow), 0.42);
+  top: -160px;
+  right: -120px;
+}
+.casepage__halo--2 {
+  width: clamp(320px, 40vw, 540px);
+  height: clamp(320px, 40vw, 540px);
+  background: rgba(var(--glow-2), 0.4);
+  top: 48%;
+  left: -180px;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.casepage__head {
+  position: relative;
+  z-index: 2;
+  margin-bottom: clamp(48px, 7vw, 96px);
+}
+
+.casepage__head-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(1.5rem, 5vw, 3.5rem);
+  margin-top: 2.6rem;
+}
+.casepage__count {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.casepage__count-num {
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.casepage__count-cap {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+
+/* ── Status legend ───────────────────────────────────────────────────────── */
+.cases-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 2.4rem;
+  padding-top: 2.2rem;
+  border-top: 1px solid var(--border);
+}
+.cases-legend__item {
+  --c: var(--accent);
+  --g: var(--glow);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7em;
+  padding: 0.6em 1.1em 0.6em 0.95em;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  backdrop-filter: blur(8px);
+}
+.cases-legend__item--done {
+  --c: var(--accent);
+  --g: var(--glow);
+}
+.cases-legend__item--planned {
+  --c: var(--accent-3);
+  --g: var(--glow-3);
+}
+.cases-legend__item--active {
+  --c: var(--accent-2);
+  --g: var(--glow-2);
+}
+.cases-legend__dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 0 4px rgba(var(--g), 0.16),
+    0 0 14px rgba(var(--g), calc(0.9 * var(--halo-strength)));
+  flex: none;
+}
+.cases-legend__label {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text);
+}
+.cases-legend__note {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: var(--text-mute);
+}
+
+/* ── Timeline scaffold ───────────────────────────────────────────────────── */
+.cases-timeline {
+  position: relative;
+  z-index: 2;
+  --spine-x: 28px;
+  padding-left: calc(var(--spine-x) + 36px);
+}
+
+/* the vertical progress spine */
+.cases-spine {
+  position: absolute;
+  left: var(--spine-x);
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  pointer-events: none;
+}
+.cases-spine__track,
+.cases-spine__fill {
+  position: absolute;
+  inset: 0;
+  width: 2px;
+  border-radius: 2px;
+}
+.cases-spine__track {
+  background: var(--border);
+}
+.cases-spine__fill {
+  background: linear-gradient(
+    180deg,
+    var(--accent),
+    var(--accent-2) 55%,
+    var(--accent-3)
+  );
+  box-shadow: 0 0 16px rgba(var(--glow-2), calc(0.6 * var(--halo-strength)));
+}
+
+/* ── Cohort block ────────────────────────────────────────────────────────── */
+.cases-cohort {
+  position: relative;
+  padding-block: clamp(28px, 4.5vw, 52px);
+}
+.cases-cohort:first-child {
+  padding-top: 0;
+}
+.cases-cohort:last-child {
+  padding-bottom: 0;
+}
+
+/* node sitting on the spine */
+.cases-cohort__node {
+  position: absolute;
+  /* spine sits at (--spine-x); cohort content starts at (--spine-x + 36px),
+     so the spine center is -36px from the cohort's left edge. */
+  left: -36px;
+  top: clamp(28px, 4.5vw, 52px);
+  width: 20px;
+  height: 20px;
+  margin-left: -9px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bg-elev);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 0 0 5px rgba(var(--glow), calc(0.1 * var(--halo-strength)));
+}
+.cases-cohort:first-child .cases-cohort__node {
+  top: 0;
+}
+.cases-cohort__node-core {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px rgba(var(--glow), calc(0.9 * var(--halo-strength)));
+}
+
+.cases-cohort__head {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  margin-bottom: 1.8rem;
+}
+.cases-cohort__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin: 0;
+  flex: none;
+}
+.cases-cohort__gen {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.6vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.cases-cohort__seq {
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  color: var(--text-mute);
+}
+.cases-cohort__rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--border-strong), transparent);
+}
+
+/* ── Card grid (1 → 2 → 3 cols) ──────────────────────────────────────────── */
+.cases-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 2vw, 1.4rem);
+}
+@media (min-width: 640px) {
+  .cases-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1080px) {
+  .cases-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Case card ───────────────────────────────────────────────────────────── */
+.cases-card {
+  --c: var(--accent);
+  --g: var(--glow);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: clamp(1.4rem, 2.2vw, 1.9rem);
+  overflow: hidden;
+  transition: transform 0.45s var(--ease-out), box-shadow 0.45s var(--ease-out),
+    border-color 0.45s var(--ease-out);
+}
+.cases-card--done {
+  --c: var(--accent);
+  --g: var(--glow);
+}
+.cases-card--planned {
+  --c: var(--accent-3);
+  --g: var(--glow-3);
+}
+.cases-card--active {
+  --c: var(--accent-2);
+  --g: var(--glow-2);
+}
+
+/* left status accent edge */
+.cases-card__edge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--c);
+  box-shadow: 0 0 18px rgba(var(--g), calc(0.7 * var(--halo-strength)));
+}
+
+.cases-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--c);
+  box-shadow: var(--shadow-card),
+    0 0 0 1px rgba(var(--g), 0.4),
+    0 26px 60px -34px rgba(var(--g), calc(0.6 * var(--halo-strength)));
+}
+
+.cases-card__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: space-between;
+}
+
+/* status badge */
+.cases-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.42em 0.85em 0.42em 0.7em;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  color: var(--c);
+  background: rgba(var(--g), 0.1);
+  border: 1px solid rgba(var(--g), 0.32);
+  line-height: 1.2;
+}
+.cases-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c);
+  box-shadow: 0 0 8px rgba(var(--g), calc(0.9 * var(--halo-strength)));
+  flex: none;
+}
+
+.cases-card__dept {
+  flex: none;
+}
+
+.cases-card__title {
+  margin: 0;
+  font-size: clamp(1.18rem, 2vw, 1.5rem);
+  color: var(--text);
+}
+
+.cases-card__partner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  margin-top: auto;
+}
+.cases-card__partner-cap {
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+}
+.cases-card__partner-name {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--text-dim);
+}
+
+/* ── CTA ─────────────────────────────────────────────────────────────────── */
+.cases-cta {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(64px, 10vw, 130px);
+}
+.cases-cta__panel {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(2.4rem, 5vw, 4.2rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.2rem;
+  background: var(--surface-2);
+}
+.cases-cta__halo {
+  width: 420px;
+  height: 420px;
+  background: rgba(var(--glow), 0.5);
+  top: -180px;
+  right: -120px;
+}
+.cases-cta__title {
+  margin: 0;
+  max-width: 18ch;
+}
+.cases-cta__sub {
+  max-width: 56ch;
+  margin: 0;
+}
+.cases-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+
+/* ── Responsive: collapse the spine on small screens ─────────────────────── */
+@media (max-width: 640px) {
+  .cases-timeline {
+    --spine-x: 9px;
+    padding-left: 28px;
+  }
+  .cases-cohort__node {
+    /* spine center at 10px absolute; content edge at 28px → -18px from edge */
+    left: -28px;
+    margin-left: 0;
+  }
+  .cases-cohort__head {
+    gap: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cases-card:hover {
+    transform: none;
+  }
+  /* spine + nodes are decorative; with motion off, show the spine filled */
+  .cases-spine__fill {
+    transform: scaleY(1);
+  }
+}
